@@ -1,0 +1,12 @@
+appId: com.healthmate.app
+productName: HealthMate
+copyright: Copyright © 2024 Devesh Sawant
+directories:
+  output: dist
+  buildResources: resources
+files:
+  - from: .
+    filter:
+      - package.json
+      - app
+publish: null
