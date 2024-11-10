@@ -40,7 +40,6 @@ export default function LoginPage() {
         
         setError(response.error);
       } else {
-        console.log(response.data);  
         router.push("/dashboard");
       }
     } catch (err) {

@@ -2,6 +2,7 @@ import path from 'path'
 import { app, ipcMain } from 'electron'
 import serve from 'electron-serve'
 import { createWindow } from './helpers'
+const { registerIpcHandlers } = require('./api/ipcHandlers'); // Import IPC handlers
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -21,7 +22,9 @@ if (isProd) {
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
+    autoHideMenuBar: true,
   })
+  mainWindow.maximize();
 
   if (isProd) {
     await mainWindow.loadURL('app://./')
@@ -31,6 +34,9 @@ if (isProd) {
     mainWindow.webContents.openDevTools()
   }
 })()
+
+// Register all IPC handlers
+registerIpcHandlers();
 
 app.on('window-all-closed', () => {
   app.quit()
