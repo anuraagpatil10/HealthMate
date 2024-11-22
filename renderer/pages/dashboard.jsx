@@ -1,14 +1,15 @@
 "use client"
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { CalendarDays, Clock, Hospital, Search, User, Activity, Pill, FileText, Settings, Menu, X } from "lucide-react"
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { Switch } from "@/components/ui/switch"
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CalendarDays, Clock, Hospital, Search, User, Activity, Pill, FileText, Settings, Menu, X } from "lucide-react";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Switch } from "@/components/ui/switch";
 
 import { Montserrat } from "next/font/google";
 const montserratFont = Montserrat({
@@ -17,10 +18,16 @@ const montserratFont = Montserrat({
 });
 
 export default function Dashboard() {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await window.supabaseAPI.logout();
+    router.push('/login');
+  };
 
   return (
-    <div className= {`${montserratFont.className} min-h-screen bg-background text-foreground flex `}>
+    <div className={`${montserratFont.className} min-h-screen bg-background text-foreground flex`}>
       {/* Sidebar */}
       <aside className={`bg-muted w-64 p-4 space-y-4 ${sidebarOpen ? 'block' : 'hidden'} md:block`}>
         <div className="flex items-center justify-between mb-4">
@@ -47,6 +54,9 @@ export default function Dashboard() {
           </Button>
           <Button variant="ghost" className="w-full justify-start">
             <User className="mr-2 h-4 w-4" /> Doctors
+          </Button>
+          <Button variant="ghost" className="w-full justify-start" onClick={handleLogout}>
+            <Settings className="mr-2 h-4 w-4" /> Logout
           </Button>
         </nav>
       </aside>
@@ -265,5 +275,5 @@ export default function Dashboard() {
         </Tabs>
       </main>
     </div>
-  )
+  );
 }

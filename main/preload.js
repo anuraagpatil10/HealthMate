@@ -12,4 +12,7 @@ contextBridge.exposeInMainWorld('supabaseAPI', {
 
   // Expose a method to get cookies
   getCookies: async () => await ipcRenderer.invoke('get-cookies'),
+
+  // Expose the logout function
+  logout: async () => await ipcRenderer.invoke('logout'),
 });

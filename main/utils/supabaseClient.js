@@ -14,4 +14,12 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-module.exports = { supabase };
+async function logout() {
+  await supabase.auth.signOut();
+  const { session } = require('electron');
+  session.defaultSession.cookies.remove('http://localhost', 'supabaseSession', (error) => {
+    if (error) console.error('Failed to remove cookie:', error);
+  });
+}
+
+module.exports = { supabase, logout };

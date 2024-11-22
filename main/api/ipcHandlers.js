@@ -3,6 +3,7 @@ const { ipcMain, session } = require('electron');
 const { login } = require('./login');
 const { signup } = require('./signup');
 const { fetchData } = require('./fetchdata');
+const { logout } = require('../utils/supabaseClient');
 
 function registerIpcHandlers() {
   // Login handler
@@ -40,6 +41,16 @@ function registerIpcHandlers() {
     } catch (error) {
       console.error('Failed to get cookies:', error);
       return [];
+    }
+  });
+
+  // Logout handler
+  ipcMain.handle('logout', async () => {
+    try {
+      await logout();
+      return { success: true };
+    } catch (error) {
+      return { error: error.message };
     }
   });
 }
