@@ -5,7 +5,7 @@ contextBridge.exposeInMainWorld('supabaseAPI', {
   login: async (email, password) => await ipcRenderer.invoke('login', email, password),
   
   // Expose the signup function
-  signup: async (email, password) => await ipcRenderer.invoke('signup', email, password),
+  signup: async (email, password, fullName, phoneNumber, gender) => await ipcRenderer.invoke('signup', email, password, fullName, phoneNumber, gender),
   
   // Expose the fetchData function
   fetchData: async (table) => await ipcRenderer.invoke('fetch-data', table),

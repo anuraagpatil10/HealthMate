@@ -16,9 +16,9 @@ function registerIpcHandlers() {
   });
 
   // Signup handler
-  ipcMain.handle('signup', async (_, email, password) => {
+  ipcMain.handle('signup', async (_, email, password, fullName, phoneNumber, gender) => {
     try {
-      return { data: await signup(email, password) };
+      return { data: await signup(email, password, fullName, phoneNumber, gender) };
     } catch (error) {
       return { error: error.message };
     }
