@@ -1,5 +1,5 @@
 // electron/api/fetchData.js
-const { supabase } = require('./supabaseClient'); // Import shared Supabase client
+const { supabase } = require('../utils/supabaseClient'); // Import shared Supabase client
 
 async function fetchData(table) {
   const { data, error } = await supabase.from(table).select('*');

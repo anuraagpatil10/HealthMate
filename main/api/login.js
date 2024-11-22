@@ -1,5 +1,5 @@
 // electron/api/login.js
-const { supabase } = require('./supabaseClient'); // Import shared Supabase client
+const { supabase } = require('../utils/supabaseClient'); // Import shared Supabase client
 
 async function login(email, password) {
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
