@@ -9,4 +9,7 @@ contextBridge.exposeInMainWorld('supabaseAPI', {
   
   // Expose the fetchData function
   fetchData: async (table) => await ipcRenderer.invoke('fetch-data', table),
+
+  // Expose a method to get cookies
+  getCookies: async () => await ipcRenderer.invoke('get-cookies'),
 });

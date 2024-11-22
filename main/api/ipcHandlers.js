@@ -1,5 +1,5 @@
 // electron/api/ipcHandlers.js
-const { ipcMain } = require('electron');
+const { ipcMain, session } = require('electron');
 const { login } = require('./login');
 const { signup } = require('./signup');
 const { fetchData } = require('./fetchdata');
@@ -29,6 +29,17 @@ function registerIpcHandlers() {
       return { data: await fetchData(table) };
     } catch (error) {
       return { error: error.message };
+    }
+  });
+
+  // Get cookies handler
+  ipcMain.handle('get-cookies', async () => {
+    try {
+      const cookies = await session.defaultSession.cookies.get({});
+      return cookies;
+    } catch (error) {
+      console.error('Failed to get cookies:', error);
+      return [];
     }
   });
 }

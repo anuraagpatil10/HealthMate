@@ -13,7 +13,6 @@ import { useRouter } from 'next/navigation'; // Import useRouter from Next.js
 import Error from "@/components/Error"
 import { useState } from "react"
 
-
 const montserratFont = Montserrat({
     weight: ["100", "200", "400", "600"],
     subsets: ["latin"],
@@ -37,14 +36,12 @@ export default function LoginPage() {
 
       if (response.error) {
         console.error(response.error);
-        
         setError(response.error);
       } else {
         router.push("/dashboard");
       }
     } catch (err) {
       console.error(err);
-      
       setError('An unexpected error occurred. Please try again.');
     }
     setLoading(false);
@@ -68,14 +65,12 @@ export default function LoginPage() {
               <TabsTrigger value="admin">Admin</TabsTrigger>
             </TabsList>
             <TabsContent value="patient">
-                  {error ? <Error errorMessage={error} /> : null}
+              {error ? <Error errorMessage={error} /> : null}
               <div className="mt-6 space-y-6">
                 <form className="space-y-4" onSubmit={handleLogin}>
-                  <Input type="email" name="email" placeholder="Email address" required           value={email}
-          onChange={(e) => setEmail(e.target.value)}/>
-                  <Input type="password" name="password" placeholder="Password" required           value={password}
-          onChange={(e) => setPassword(e.target.value)} />
-                  <Button className="w-full bg-[--first] hover:bg-[--second] text-white" type="submit">Log in </Button>
+                  <Input type="email" name="email" placeholder="Email address" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                  <Input type="password" name="password" placeholder="Password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+                  <Button className="w-full bg-[--first] hover:bg-[--second] text-white" type="submit">Log in</Button>
                 </form>
                 <div className="text-center">
                   <Link href="/forgot-password" className="text-sm text-indigo-600 hover:underline">
