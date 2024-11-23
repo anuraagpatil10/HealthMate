@@ -4,6 +4,7 @@ const { login } = require('./login');
 const { signup } = require('./signup');
 const { fetchData } = require('./fetchdata');
 const { logout } = require('../utils/supabaseClient');
+const { loginWithGoogle } = require('./googleOAuth');
 
 function registerIpcHandlers() {
   // Login handler
@@ -49,6 +50,15 @@ function registerIpcHandlers() {
     try {
       await logout();
       return { success: true };
+    } catch (error) {
+      return { error: error.message };
+    }
+  });
+
+  ipcMain.handle('login-with-google', async () => {
+    try {
+      const data = await loginWithGoogle(mainWindow);
+      return { data };
     } catch (error) {
       return { error: error.message };
     }
