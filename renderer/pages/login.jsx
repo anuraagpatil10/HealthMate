@@ -47,6 +47,21 @@ export default function LoginPage() {
     setLoading(false);
   };
 
+  const handleGoogleLogin = async () => {
+    try {
+      const response = await window.supabaseAPI.loginWithGoogle();
+      if (response.error) {
+        console.error(response.error);
+        setError(response.error);
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (err) {
+      console.error(err);
+      setError('An unexpected error occurred. Please try again.');
+    }
+  };
+
   return (
     <div className={`${montserratFont.className} bg-[--second] min-h-screen flex flex-col md:flex-row`}>
       <div className="md:w-2/5 p-8 flex flex-col items-center justify-center">
@@ -80,11 +95,11 @@ export default function LoginPage() {
                 <div className="text-center">
                   <p className="text-sm text-gray-600 mb-4">or log in with</p>
                   <div className="flex justify-center space-x-4">
-                    <Button variant="outline" size="icon">
-                      <Facebook className="w-4 h-4 text-blue-600" />
+                    <Button variant="outline" size="icon" onClick={handleGoogleLogin}>
+                      <FcGoogle />
                     </Button>
                     <Button variant="outline" size="icon">
-                      <FcGoogle />
+                      <Facebook className="w-4 h-4 text-blue-600" />
                     </Button>
                     <Button variant="outline" size="icon">
                       <Twitter className="w-4 h-4 text-sky-500" />

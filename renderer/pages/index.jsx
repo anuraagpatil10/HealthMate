@@ -12,7 +12,7 @@ export default function LoginPage() {
       console.log(accessToken);
       if (accessToken) {
         router.push("/dashboard");
-      }else{
+      } else {
         router.push("/login");
       }
     };

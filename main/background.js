@@ -1,5 +1,5 @@
 import path from 'path';
-import { app, ipcMain, session } from 'electron';
+import { app, ipcMain, session, protocol } from 'electron';
 import serve from 'electron-serve';
 import { createWindow } from './helpers';
 const { registerIpcHandlers } = require('./api/ipcHandlers'); // Import IPC handlers
@@ -12,6 +12,13 @@ if (isProd) {
 } else {
   app.setPath('userData', `${app.getPath('userData')} (development)`);
 }
+
+app.on('ready', () => {
+  protocol.registerFileProtocol('app', (request, callback) => {
+    const url = request.url.substring(6); // Remove 'app://' from the URL
+    callback({ path: path.normalize(path.join(__dirname, url)) });
+  });
+});
 
 (async () => {
   await app.whenReady();
@@ -46,10 +53,10 @@ if (isProd) {
     await mainWindow.loadURL(`http://localhost:${port}/`);
     mainWindow.webContents.openDevTools();
   }
-})();
 
-// Register all IPC handlers
-registerIpcHandlers();
+  // Register all IPC handlers
+  registerIpcHandlers(mainWindow);
+})();
 
 app.on('window-all-closed', () => {
   app.quit();
