@@ -4,7 +4,7 @@ const { supabase } = require('../utils/supabaseClient');
 
 async function loginWithGoogle(mainWindow) {
   console.log('NODE_ENV:', process.env.NODE_ENV);
-  const redirectTo = process.env.NODE_ENV === 'production' ? 'app://./dashboard' : 'http://localhost:8888/dashboard';
+  const redirectTo = process.env.NODE_ENV === 'production' ? 'app://./app/dashboard' : 'http://localhost:8888/app/dashboard';
   console.log('Redirect URL:', redirectTo);
 
   const { data, error } = await supabase.auth.signInWithOAuth({
@@ -67,8 +67,8 @@ async function loginWithGoogle(mainWindow) {
 
           // Redirect to dashboard
           const redirectUrl = process.env.NODE_ENV === 'production' 
-            ? 'app://./dashboard' 
-            : 'http://localhost:8888/dashboard';
+            ? 'app://./app/dashboard' 
+            : 'http://localhost:8888/app/dashboard';
           mainWindow.loadURL(redirectUrl);
 
           resolve({ accessToken });

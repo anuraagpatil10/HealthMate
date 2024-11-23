@@ -11,7 +11,7 @@ export default function LoginPage() {
       const accessToken = cookies.find(cookie => cookie.name === 'supabaseSession');
       console.log(accessToken);
       if (accessToken) {
-        router.push("/dashboard");
+        router.push("/app/dashboard");
       } else {
         router.push("/login");
       }

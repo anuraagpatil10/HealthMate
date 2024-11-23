@@ -1,14 +1,14 @@
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Facebook, Twitter, Github } from "lucide-react"
-import Link from "next/link"
-import Logo from "@/components/Logo"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Facebook, Twitter, Github } from "lucide-react";
+import Link from "next/link";
+import Logo from "@/components/Logo";
 import { useState } from "react";
-import {useRouter} from "next/navigation"
+import { useRouter } from "next/navigation";
 import { Montserrat } from "next/font/google";
 
 const montserratFont = Montserrat({
@@ -22,16 +22,21 @@ export default function SignUp() {
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [gender, setGender] = useState('');
+  const [role, setRole] = useState(''); // Add state for role selection
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSignUp = async (e) => {
     e.preventDefault();
+    if (!role) {
+      setError("Please select a role (Patient or Doctor).");
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
-      const response = await window.supabaseAPI.signup(email, password, fullName, phoneNumber, gender);
+      const response = await window.supabaseAPI.signup(email, password, fullName, phoneNumber, gender, role);
       if (response.error) {
         console.error(response.error);
         setError(response.error);
@@ -40,7 +45,7 @@ export default function SignUp() {
       }
     } catch (err) {
       console.error(err);
-      setError('An unexpected error occurred. Please try again.');
+      setError("An unexpected error occurred. Please try again.");
     }
     setLoading(false);
   };
@@ -56,7 +61,24 @@ export default function SignUp() {
             </p>
           </div>
           <form className="mt-8 space-y-6" onSubmit={handleSignUp}>
-            <div className="rounded-md shadow-sm space-y-4">
+            <div className="space-y-4">
+              {/* Role Selection */}
+              <div>
+                <Label htmlFor="role" className="block text-sm font-medium text-gray-700">
+                  Select Role
+                </Label>
+                <Select name="role" value={role} onValueChange={setRole}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select role (Patient or Doctor)" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="patient">Patient</SelectItem>
+                    <SelectItem value="doctor">Doctor</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* User Information */}
               <div>
                 <Input
                   id="full-name"
@@ -144,7 +166,7 @@ export default function SignUp() {
             </div>
             <div>
               <Button className="w-full bg-[--first] hover:bg-[--second] text-white" type="submit" disabled={loading}>
-                {loading ? 'Signing Up...' : 'Sign Up'}
+                {loading ? "Signing Up..." : "Sign Up"}
               </Button>
             </div>
           </form>
@@ -158,7 +180,7 @@ export default function SignUp() {
         </div>
       </div>
       <div className="bg-[--second] md:w-3/5 p-10 flex flex-col gap-5 items-center text-center justify-center text-white">
-        <Logo />
+        <Logo logoSize="text-2xl md:text-4xl" imgSize={50} />
         <p className="text-xl my-8">
           Discover the power of personalized health insights and seamless tracking with HealthMate.
         </p>

@@ -38,7 +38,7 @@ export default function LoginPage() {
         console.error(response.error);
         setError(response.error);
       } else {
-        router.push("/dashboard");
+        router.push("/app/dashboard");
       }
     } catch (err) {
       console.error(err);
@@ -54,7 +54,7 @@ export default function LoginPage() {
         console.error(response.error);
         setError(response.error);
       } else {
-        router.push("/dashboard");
+        router.push("/app/dashboard");
       }
     } catch (err) {
       console.error(err);
@@ -65,7 +65,7 @@ export default function LoginPage() {
   return (
     <div className={`${montserratFont.className} bg-[--second] min-h-screen flex flex-col md:flex-row`}>
       <div className="md:w-2/5 p-8 flex flex-col items-center justify-center">
-        <Logo />
+        <Logo logoSize="text-2xl md:text-4xl" imgSize={50} />
         <p className="text-[--foreground] text-center text-lg mt-5">
           Discover the power of personalized health insights and seamless tracking with HealthMate.
         </p>
