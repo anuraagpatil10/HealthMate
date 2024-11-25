@@ -3,7 +3,7 @@
 import React, { use } from 'react'
 import { useRouter } from "next/router"
 import Link from "next/link"
-import { Home, Calendar, FileText, Users, MessageSquare, Settings, LogOut, Pill, Activity, Target , X} from "lucide-react"
+import { Home, Calendar, FileText, Users, MessageSquare, Settings, LogOut, Stethoscope,Clipboard, Activity, Target , X} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Logo from "@/components/Logo"
 
@@ -37,16 +37,16 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
         </div>
         <nav className="space-y-2 flex flex-col gap-1">
           {[
-            { icon: Home, label: 'Dashboard', path: '/patient/dashboard' },
-            { icon: Calendar, label: 'Appointments', path: '/patient/appointments' },
-            { icon: FileText, label: 'Prescriptions', path: '/patient/prescriptions' },
-            { icon: Users, label: 'Doctors', path: '/patient/doctors' },
-            { icon: MessageSquare, label: 'Messages' , path: '/patient/messages' },
-            { icon: FileText, label: 'Health Records' , path: '/patient/health-records' },
-            { icon: Pill, label: 'Medications' , path: '/patient/medications' },
-            { icon: Activity, label: 'Lab Results' , path: '/patient/lab-results' },
-            { icon: Target, label: 'Health Goals' , path: '/patient/health-goals' },
-            { icon: Settings, label: 'Settings' , path: '/patient/settings' },
+            { icon: Home, label: 'Dashboard', path: '/doctor/dashboard' },
+            { icon: Calendar, label: 'Appointments', path: '/doctor/appointments' },
+            { icon: Users, label: 'Patients' , path: '/doctor/patients'},
+            { icon: FileText, label: 'Medical Records' , path: '/doctor/medical-records'},
+            { icon: MessageSquare, label: 'Messages' , path: '/doctor/messages'},
+            { icon: Clipboard, label: 'Prescriptions' , path: '/doctor/precriptions'},
+            { icon: Activity, label: 'Lab Results' , path: '/doctor/lab-results'},
+            { icon: Stethoscope, label: 'Diagnoses' , path: '/doctor/diagnoses'},
+            { icon: Target, label: 'Treatment Plans' , path: '/doctor/treatment-plans'},
+            { icon: Settings, label: 'Settings' , path: '/doctor/settings'},
           ].map((item, index) => (
             <Link key={index} href={item.path}>
               <Button

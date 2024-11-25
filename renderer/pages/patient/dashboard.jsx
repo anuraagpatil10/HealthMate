@@ -12,58 +12,19 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import Sidebar from "@/components/patient/Sidebar"
 import { Home, Calendar, FileText, Users, MessageSquare, Settings, LogOut, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'; 
+import Header from "@/components/patient/Header"
 
 export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const router = useRouter();
 
-  const handleLogout = async () => {
-    try {
-      const response = await window.supabaseAPI.logout();
-      if (response.success) {
-        router.push('/login');
-      } else {
-        console.error('Logout failed:', response.error);
-      }
-    } catch (error) {
-      console.error('An unexpected error occurred during logout:', error);
-    }
-  };
   return (
     <div className="flex min-h-screen bg-secondary">
-      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} handleLogout={handleLogout} />
+      <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
       {/* Main Content */}
       <div className="flex-1 overflow-hidden">
         {/* Header */}
-        <header className="sticky top-0 z-40 bg-white p-4 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setSidebarOpen(true)}>
-                <Menu className="h-6 w-6" />
-                <span className="sr-only">Open sidebar</span>
-              </Button>
-              <div className="relative hidden sm:block">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-                <Input
-                  type="search"
-                  placeholder="Search..."
-                  className="w-[300px] pl-8 rounded-full bg-muted"
-                />
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <Bell className="h-5 w-5" />
-                <span className="sr-only">Notifications</span>
-              </Button>
-              <Avatar>
-                <AvatarImage src="/placeholder.svg" alt="User avatar" />
-                <AvatarFallback>JD</AvatarFallback>
-              </Avatar>
-            </div>
-          </div>
-        </header>
+        <Header setSidebarOpen={setSidebarOpen} />
 
         {/* Dashboard Content */}
         <ScrollArea className="h-[calc(100vh-4rem)]">
@@ -115,7 +76,7 @@ export default function DashboardPage() {
 
               {/* Main Dashboard Tabs */}
               <Tabs defaultValue="appointments" className="space-y-4">
-                <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 bg-muted p-1 rounded-lg">
+                <TabsList className="grid w-full grid-cols-4 bg-muted p-1 rounded-lg">
                   {["Appointments", "Prescriptions", "Find Doctors", "Health Records"].map((tab) => (
                     <TabsTrigger key={tab} value={tab.toLowerCase().replace(' ', '-')} className="rounded-md data-[state=active]:bg-white">
                       {tab}

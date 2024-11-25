@@ -34,7 +34,6 @@ export default function LoginPage() {
     try {
       // Use IPC to call the login function in the main process
       const response = await window.supabaseAPI.login(email, password);
-      console.log(response);
       
       if (response.error) {
         console.error(response.error);
@@ -44,10 +43,14 @@ export default function LoginPage() {
         const checkAccessToken = async () => {
           const cookies = await window.supabaseAPI.getCookies();
           const accessToken = cookies.find(cookie => cookie.name === 'supabaseSession');
-          console.log(accessToken);
           if (accessToken) {
             // Fetch user role
             const response = await window.supabaseAPI.getUserRole();
+            if (response.role !== role) {
+              setError('Invalid role. Please select the correct role.');
+              setLoading(false);
+              return;
+            }
             if (response.role === 'patient') {
               router.push("/patient/dashboard");
             } else if (response.role === 'doctor') {
@@ -144,6 +147,7 @@ export default function LoginPage() {
               </div>
             </TabsContent>
             <TabsContent value="doctor">
+              {error ? <Error errorMessage={error} /> : null}
               <div className="mt-6 space-y-6">
                 <form className="space-y-4" onSubmit={handleLogin}>
                   <Input type="email" name="email" placeholder="Email address" required value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -181,6 +185,7 @@ export default function LoginPage() {
               </div>
             </TabsContent>
             <TabsContent value="admin">
+              {error ? <Error errorMessage={error} /> : null}
               <div className="mt-6 space-y-6">
                 <form className="space-y-4">
                   <Input type="email" placeholder="Email address" />

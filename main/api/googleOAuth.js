@@ -68,7 +68,7 @@ async function loginWithGoogle(mainWindow) {
           // Redirect to dashboard
           const redirectUrl = process.env.NODE_ENV === 'production' 
             ? 'app://./app/dashboard' 
-            : 'http://localhost:8888/app/dashboard';
+            : 'http://localhost:8888/patient/dashboard';
           mainWindow.loadURL(redirectUrl);
 
           resolve({ accessToken });

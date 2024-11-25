@@ -3,7 +3,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
-, "pages/_app.jsx"  ],
+, "pages/_app.jsx", "components/ui/dropdown-menu.jsx"  ],
   "exclude": [
     "node_modules"
   ],
