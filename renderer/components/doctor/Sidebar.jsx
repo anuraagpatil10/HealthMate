@@ -42,7 +42,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
             { icon: Users, label: 'Patients' , path: '/doctor/patients'},
             { icon: FileText, label: 'Medical Records' , path: '/doctor/medical-records'},
             { icon: MessageSquare, label: 'Messages' , path: '/doctor/messages'},
-            { icon: Clipboard, label: 'Prescriptions' , path: '/doctor/precriptions'},
+            { icon: Clipboard, label: 'Prescriptions' , path: '/doctor/prescriptions'},
             { icon: Activity, label: 'Lab Results' , path: '/doctor/lab-results'},
             { icon: Stethoscope, label: 'Diagnoses' , path: '/doctor/diagnoses'},
             { icon: Target, label: 'Treatment Plans' , path: '/doctor/treatment-plans'},
