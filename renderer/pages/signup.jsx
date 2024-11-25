@@ -1,15 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Facebook, Twitter, Github } from "lucide-react";
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Montserrat } from "next/font/google";
+import Error from "@/components/Error";
 
 const montserratFont = Montserrat({
   weight: ["100", "200", "400", "600"],
@@ -36,6 +34,8 @@ export default function SignUp() {
     setLoading(true);
     setError(null);
     try {
+      console.log("Role before API call: ", role); // Add logging here
+      
       const response = await window.supabaseAPI.signup(email, password, fullName, phoneNumber, gender, role);
       if (response.error) {
         console.error(response.error);
@@ -107,26 +107,13 @@ export default function SignUp() {
                 <Input
                   id="phone-number"
                   name="phone-number"
-                  type="tel"
+                  type="text"
                   autoComplete="tel"
                   required
-                  placeholder="Phone number"
+                  placeholder="Phone Number"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                 />
-              </div>
-              <div>
-                <Select name="gender" value={gender} onValueChange={setGender}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select gender" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="female">Female</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                    <SelectItem value="prefer-not-to-say">Prefer not to say</SelectItem>
-                  </SelectContent>
-                </Select>
               </div>
               <div>
                 <Input
@@ -141,55 +128,36 @@ export default function SignUp() {
                 />
               </div>
               <div>
-                <Input
-                  id="confirm-password"
-                  name="confirm-password"
-                  type="password"
-                  autoComplete="new-password"
-                  required
-                  placeholder="Confirm Password"
-                />
+                <Label htmlFor="gender" className="block text-sm font-medium text-gray-700">
+                  Gender
+                </Label>
+                <Select name="gender" value={gender} onValueChange={setGender}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">Male</SelectItem>
+                    <SelectItem value="female">Female</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                    <SelectItem value="prefer-not-to-say">Prefer not to say</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-            </div>
-            <div className="flex items-center">
-              <Checkbox id="terms" />
-              <Label htmlFor="terms" className="ml-2 block text-sm text-gray-900">
-                I agree to the{" "}
-                <Link href="#" className="text-indigo-600 hover:text-indigo-500">
-                  Terms of Service
-                </Link>{" "}
-                and{" "}
-                <Link href="#" className="text-indigo-600 hover:text-indigo-500">
-                  Privacy Policy
-                </Link>
-              </Label>
             </div>
             <div>
               <Button className="w-full bg-[--first] hover:bg-[--second] text-white" type="submit" disabled={loading}>
-                {loading ? "Signing Up..." : "Sign Up"}
+                {loading ? 'Signing up...' : 'Sign up'}
               </Button>
             </div>
           </form>
-          {error && <p className="text-red-500 text-center">{error}</p>}
-          <p className="mt-2 text-center text-sm text-gray-600">
+          {error && <Error errorMessage={error} />}
+          <p className="text-center text-sm text-gray-600">
             Already have an account?{" "}
-            <Link href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+            <Link href="/login" className="text-indigo-600 hover:underline">
               Log in
             </Link>
           </p>
         </div>
-      </div>
-      <div className="bg-[--second] md:w-3/5 p-10 flex flex-col gap-5 items-center text-center justify-center text-white">
-        <Logo logoSize="text-2xl md:text-4xl" imgSize={50} />
-        <p className="text-xl my-8">
-          Discover the power of personalized health insights and seamless tracking with HealthMate.
-        </p>
-        <ul className="text-left space-y-2">
-          <li>✓ Secure and private health data management</li>
-          <li>✓ Easy appointment scheduling</li>
-          <li>✓ Personalized health insights</li>
-          <li>✓ 24/7 access to your health information</li>
-        </ul>
       </div>
     </div>
   );

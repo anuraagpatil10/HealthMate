@@ -5,14 +5,15 @@ const { signup } = require('./signup');
 const { fetchData } = require('./fetchdata');
 const { logout } = require('../utils/supabaseClient');
 const { loginWithGoogle } = require('./googleOAuth');
+const { getUserRole } = require('./getUserRole');
 
 function registerIpcHandlers(mainWindow) {
   ipcMain.handle('login', async (event, email, password) => {
     return await login(email, password);
   });
 
-  ipcMain.handle('signup', async (event, email, password, fullName, phoneNumber, gender) => {
-    return await signup(email, password, fullName, phoneNumber, gender);
+  ipcMain.handle('signup', async (event, email, password, fullName, phoneNumber, gender, role) => {
+    return await signup(email, password, fullName, phoneNumber, gender, role);
   });
 
   ipcMain.handle('fetch-data', async (event, table) => {
@@ -39,6 +40,10 @@ function registerIpcHandlers(mainWindow) {
     } catch (error) {
       return { error: error.message };
     }
+  });
+
+  ipcMain.handle('get-user-role', async () => {
+    return await getUserRole();
   });
 }
 

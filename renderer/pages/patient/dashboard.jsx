@@ -9,16 +9,26 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import Sidebar from "@/components/Sidebar"
+import Sidebar from "@/components/patient/Sidebar"
 import { Home, Calendar, FileText, Users, MessageSquare, Settings, LogOut, X } from 'lucide-react'
+import { useRouter } from 'next/navigation'; 
 
 export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const router = useRouter();
 
-  const handleLogout = () => {
-    // Add your logout logic here
-  }
-
+  const handleLogout = async () => {
+    try {
+      const response = await window.supabaseAPI.logout();
+      if (response.success) {
+        router.push('/login');
+      } else {
+        console.error('Logout failed:', response.error);
+      }
+    } catch (error) {
+      console.error('An unexpected error occurred during logout:', error);
+    }
+  };
   return (
     <div className="flex min-h-screen bg-secondary">
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} handleLogout={handleLogout} />

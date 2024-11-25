@@ -23,6 +23,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [role, setRole] = useState('patient'); // Add state for role selection
 
   const router = useRouter(); // Initialize the router
 
@@ -33,12 +34,33 @@ export default function LoginPage() {
     try {
       // Use IPC to call the login function in the main process
       const response = await window.supabaseAPI.login(email, password);
-
+      console.log(response);
+      
       if (response.error) {
         console.error(response.error);
         setError(response.error);
       } else {
-        router.push("/app/dashboard");
+        // Check for access token in cookies
+        const checkAccessToken = async () => {
+          const cookies = await window.supabaseAPI.getCookies();
+          const accessToken = cookies.find(cookie => cookie.name === 'supabaseSession');
+          console.log(accessToken);
+          if (accessToken) {
+            // Fetch user role
+            const response = await window.supabaseAPI.getUserRole();
+            if (response.role === 'patient') {
+              router.push("/patient/dashboard");
+            } else if (response.role === 'doctor') {
+              router.push("/doctor/dashboard");
+            } else {
+              router.push("/login");
+            }
+          } else {
+            router.push("/login");
+          }
+        };
+
+        checkAccessToken();
       }
     } catch (err) {
       console.error(err);
@@ -54,7 +76,11 @@ export default function LoginPage() {
         console.error(response.error);
         setError(response.error);
       } else {
-        router.push("/app/dashboard");
+        if (role === 'patient') {
+          router.push("/patient/dashboard");
+        } else if (role === 'doctor') {
+          router.push("/doctor/dashboard");
+        }
       }
     } catch (err) {
       console.error(err);
@@ -73,10 +99,10 @@ export default function LoginPage() {
       <div className="bg-white md:w-3/5 p-8 flex flex-col justify-center md:rounded-l-[80px]">
         <h2 className="text-3xl w-full text-center font-bold mb-4">LOGIN</h2>
         <div className="max-w-md w-full mx-auto">
-          <Tabs defaultValue="patient" className="w-full mb-6">
+          <Tabs defaultValue="patient" className="w-full mb-6" onValueChange={setRole}>
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="patient">Patient</TabsTrigger>
-              <TabsTrigger value="doctors">Doctors</TabsTrigger>
+              <TabsTrigger value="doctor">Doctors</TabsTrigger>
               <TabsTrigger value="admin">Admin</TabsTrigger>
             </TabsList>
             <TabsContent value="patient">
@@ -117,12 +143,12 @@ export default function LoginPage() {
                 </p>
               </div>
             </TabsContent>
-            <TabsContent value="doctors">
+            <TabsContent value="doctor">
               <div className="mt-6 space-y-6">
-                <form className="space-y-4">
-                  <Input type="email" placeholder="Email address" />
-                  <Input type="password" placeholder="Password" />
-                  <Button className="w-full bg-[--first] hover:bg-[--second] text-white">Log in</Button>
+                <form className="space-y-4" onSubmit={handleLogin}>
+                  <Input type="email" name="email" placeholder="Email address" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                  <Input type="password" name="password" placeholder="Password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+                  <Button className="w-full bg-[--first] hover:bg-[--second] text-white" type="submit">Log in</Button>
                 </form>
                 <div className="text-center">
                   <Link href="/forgot-password" className="text-sm text-indigo-600 hover:underline">
@@ -132,11 +158,11 @@ export default function LoginPage() {
                 <div className="text-center">
                   <p className="text-sm text-gray-600 mb-4">or log in with</p>
                   <div className="flex justify-center space-x-4">
-                    <Button variant="outline" size="icon">
-                      <Facebook className="w-4 h-4 text-blue-600" />
+                    <Button variant="outline" size="icon" onClick={handleGoogleLogin}>
+                      <FcGoogle />
                     </Button>
                     <Button variant="outline" size="icon">
-                      <FcGoogle />
+                      <Facebook className="w-4 h-4 text-blue-600" />
                     </Button>
                     <Button variant="outline" size="icon">
                       <Twitter className="w-4 h-4 text-sky-500" />

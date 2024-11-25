@@ -6,7 +6,17 @@ async function login(email, password) {
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) {
     console.error('Login Error:', error.message);
-    throw new Error(error.message);
+  }
+
+  const user = data.user;
+  const { data: userData, error: userError } = await supabase
+    .from('users')
+    .select('role')
+    .eq('user_id', user.id)
+    .single();
+
+  if (userError) {
+    console.error('User Role Error:', userError.message);
   }
 
   // Save session data in cookies
@@ -23,7 +33,7 @@ async function login(email, password) {
     });
   }
 
-  return data;
+  return { data, role: userData.role };
 }
 
 export{ login };

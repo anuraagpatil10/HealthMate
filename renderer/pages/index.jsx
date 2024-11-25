@@ -11,7 +11,15 @@ export default function LoginPage() {
       const accessToken = cookies.find(cookie => cookie.name === 'supabaseSession');
       console.log(accessToken);
       if (accessToken) {
-        router.push("/app/dashboard");
+        // Fetch user role
+        const response = await window.supabaseAPI.getUserRole();
+        if (response.role === 'patient') {
+          router.push("/patient/dashboard");
+        } else if (response.role === 'doctor') {
+          router.push("/doctor/dashboard");
+        } else {
+          router.push("/login");
+        }
       } else {
         router.push("/login");
       }
@@ -19,4 +27,6 @@ export default function LoginPage() {
 
     checkAccessToken();
   }, [router]);
+
+  return null;
 }
