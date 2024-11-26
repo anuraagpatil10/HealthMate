@@ -53,12 +53,11 @@ export default function DashboardPage() {
               </Card>
 
               {/* Quick Actions */}
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-3">
                 {[
                   { title: "Book Appointment", description: "Schedule a consultation", action: "Book Now", color: "bg-[--first]" },
                   { title: "Upcoming Appointments", description: "View scheduled visits", action: "View All", color: "bg-[--second]" },
                   { title: "Active Prescriptions", description: "Track your medications", action: "Manage", color: "bg-[--first]" },
-                  { title: "Health Vitals", description: "Monitor your progress", action: "Update Vitals", color: "bg-[--second]" },
                 ].map((item, index) => (
                   <Card key={index} className={`${item.color} text-white`}>
                     <CardHeader>

@@ -103,10 +103,9 @@ export default function LoginPage() {
         <h2 className="text-3xl w-full text-center font-bold mb-4">LOGIN</h2>
         <div className="max-w-md w-full mx-auto">
           <Tabs defaultValue="patient" className="w-full mb-6" onValueChange={setRole}>
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="patient">Patient</TabsTrigger>
               <TabsTrigger value="doctor">Doctors</TabsTrigger>
-              <TabsTrigger value="admin">Admin</TabsTrigger>
             </TabsList>
             <TabsContent value="patient">
               {error ? <Error errorMessage={error} /> : null}
@@ -167,44 +166,6 @@ export default function LoginPage() {
                     </Button>
                     <Button variant="outline" size="icon">
                       <Facebook className="w-4 h-4 text-blue-600" />
-                    </Button>
-                    <Button variant="outline" size="icon">
-                      <Twitter className="w-4 h-4 text-sky-500" />
-                    </Button>
-                    <Button variant="outline" size="icon">
-                      <Github className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-                <p className="text-center text-sm text-gray-600">
-                  Need an account?{" "}
-                  <Link href="/signup" className="text-indigo-600 hover:underline">
-                    Sign up
-                  </Link>
-                </p>
-              </div>
-            </TabsContent>
-            <TabsContent value="admin">
-              {error ? <Error errorMessage={error} /> : null}
-              <div className="mt-6 space-y-6">
-                <form className="space-y-4">
-                  <Input type="email" placeholder="Email address" />
-                  <Input type="password" placeholder="Password" />
-                  <Button className="w-full bg-[--first] hover:bg-[--second] text-white">Log in</Button>
-                </form>
-                <div className="text-center">
-                  <Link href="/forgot-password" className="text-sm text-indigo-600 hover:underline">
-                    Forgotten password
-                  </Link>
-                </div>
-                <div className="text-center">
-                  <p className="text-sm text-gray-600 mb-4">or log in with</p>
-                  <div className="flex justify-center space-x-4">
-                    <Button variant="outline" size="icon">
-                      <Facebook className="w-4 h-4 text-blue-600" />
-                    </Button>
-                    <Button variant="outline" size="icon">
-                      <FcGoogle />
                     </Button>
                     <Button variant="outline" size="icon">
                       <Twitter className="w-4 h-4 text-sky-500" />
