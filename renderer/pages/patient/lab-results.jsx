@@ -10,8 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import Header from "@/components/Header" // Adjust the import path based on your file structure
-import Sidebar from "@/components/Sidebar" // Adjust the import path based on your file structure
+import Header from "@/components/patient/Header" // Adjust the import path based on your file structure
+import Sidebar from "@/components/patient/Sidebar" // Adjust the import path based on your file structure
 
 export default function LabReportsPage() {
   const [searchTerm, setSearchTerm] = useState('')
