@@ -12,15 +12,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import Header from "@/components/patient/Header" // Adjust the import path based on your file structure
+import Sidebar from "@/components/patient/Sidebar" // Adjust the import path based on your file structure
 
 export default function DoctorSettingsPage() {
     const [sidebarOpen, setSidebarOpen] = useState(false)
 
     return (
         <div className="flex min-h-screen bg-[#F0F4F8]">
-            {/* Sidebar */}
-            {/* Main Content */}
+            <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
             <div className="flex-1 overflow-hidden">
+                <Header setSidebarOpen={setSidebarOpen} />
 
                 {/* Settings Content */}
                 <ScrollArea className="h-[calc(100vh-5rem)]">
@@ -89,4 +91,3 @@ export default function DoctorSettingsPage() {
         </div>
     )
 }
-
