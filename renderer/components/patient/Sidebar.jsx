@@ -42,11 +42,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
             { icon: FileText, label: 'Prescriptions', path: '/patient/prescriptions' },
             { icon: Users, label: 'Doctors', path: '/patient/doctors' },
             { icon: MessageSquare, label: 'Messages' , path: '/patient/messages' },
-            { icon: FileText, label: 'Health Records' , path: '/patient/health-records' },
-            { icon: Pill, label: 'Medications' , path: '/patient/medications' },
             { icon: Activity, label: 'Lab Results' , path: '/patient/lab-results' },
-            { icon: Target, label: 'Health Goals' , path: '/patient/health-goals' },
-            { icon: Settings, label: 'Settings' , path: '/patient/settings' },
           ].map((item, index) => (
             <Link key={index} href={item.path}>
               <Button

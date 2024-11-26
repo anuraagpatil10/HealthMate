@@ -1,11 +1,18 @@
 // Header.jsx
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Bell, Menu, Search } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const Header = ({ setSidebarOpen }) => {
+  const router = useRouter();
+
+  const handleNotificationsClick = () => {
+    router.push('/patient/notifications');
+  };
+
   return (
     <header className="sticky top-0 z-40 bg-white p-4 shadow-sm">
       <div className="flex items-center justify-between">
@@ -24,7 +31,7 @@ const Header = ({ setSidebarOpen }) => {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" className="rounded-full">
+          <Button variant="ghost" size="icon" className="rounded-full" onClick={handleNotificationsClick}>
             <Bell className="h-5 w-5" />
             <span className="sr-only">Notifications</span>
           </Button>

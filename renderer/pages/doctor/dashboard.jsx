@@ -1,247 +1,223 @@
 'use client'
 
 import { useState } from 'react'
-import { FileText, Plus, Search } from 'lucide-react'
+import { Bell, Calendar, ChevronDown, FileText, Home, Menu, MessageSquare, Search, Settings, Users, X } from 'lucide-react'
+import { Activity, Clipboard, Stethoscope, Target } from 'lucide-react'
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Progress } from "@/components/ui/progress"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import Sidebar from '../../components/doctor/Sidebar'
-import Header from '../../components/doctor/Header'
+import Header from "@/components/doctor/Header" // Adjust the import path based on your file structure
+import Sidebar from "@/components/doctor/Sidebar" // Adjust the import path based on your file structure
 
-export default function PrescriptionsPage() {
+export default function DoctorDashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [isNewPrescriptionOpen, setIsNewPrescriptionOpen] = useState(false)
-  const [newPrescription, setNewPrescription] = useState({
-    patient: '',
-    medication: '',
-    dosage: '',
-    duration: '',
-    instructions: ''
-  })
-
-  const handleNewPrescriptionChange = (e) => {
-    const { name, value } = e.target
-    setNewPrescription(prev => ({ ...prev, [name]: value }))
-  }
-
-  const handleNewPrescriptionSubmit = (e) => {
-    e.preventDefault()
-    console.log('New prescription submitted:', newPrescription)
-    // Here you would typically send this data to your backend
-    setIsNewPrescriptionOpen(false)
-    setNewPrescription({
-      patient: '',
-      medication: '',
-      dosage: '',
-      duration: '',
-      instructions: ''
-    })
-  }
 
   return (
-    <div className="flex min-h-screen bg-secondary">
+    <div className="flex min-h-screen bg-[#F0F4F8]">
+      {/* Sidebar */}
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+
+      {/* Main Content */}
       <div className="flex-1 overflow-hidden">
+        {/* Header */}
         <Header setSidebarOpen={setSidebarOpen} />
+
+        {/* Dashboard Content */}
         <ScrollArea className="h-[calc(100vh-5rem)]">
           <main className="p-6">
             <div className="grid gap-6">
-              {/* Header Card */}
+              {/* Welcome Card */}
               <Card className="bg-gradient-to-r from-[--first] to-[--second] text-white">
                 <CardHeader>
-                  <CardTitle className="text-2xl">Prescriptions</CardTitle>
-                  <p className="text-blue-100">Manage and create prescriptions for your patients</p>
+                  <CardTitle className="text-2xl">Welcome back, Dr. Smith!</CardTitle>
+                  <CardDescription className="text-blue-100">Here's an overview of your day.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Dialog open={isNewPrescriptionOpen} onOpenChange={setIsNewPrescriptionOpen}>
-                    <DialogTrigger asChild>
-                      <Button className="bg-white text-gray-800 hover:bg-gray-100">
-                        <Plus className="mr-2 h-4 w-4" />
-                        New Prescription
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
-                      <DialogHeader>
-                        <DialogTitle>Create New Prescription</DialogTitle>
-                        <DialogDescription>
-                          Fill in the details for the new prescription. Click save when you're done.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <form onSubmit={handleNewPrescriptionSubmit}>
-                        <div className="grid gap-4 py-4">
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="patient" className="text-right">
-                              Patient
-                            </Label>
-                            <Input
-                              id="patient"
-                              name="patient"
-                              value={newPrescription.patient}
-                              onChange={handleNewPrescriptionChange}
-                              className="col-span-3"
-                            />
-                          </div>
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="medication" className="text-right">
-                              Medication
-                            </Label>
-                            <Input
-                              id="medication"
-                              name="medication"
-                              value={newPrescription.medication}
-                              onChange={handleNewPrescriptionChange}
-                              className="col-span-3"
-                            />
-                          </div>
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="dosage" className="text-right">
-                              Dosage
-                            </Label>
-                            <Input
-                              id="dosage"
-                              name="dosage"
-                              value={newPrescription.dosage}
-                              onChange={handleNewPrescriptionChange}
-                              className="col-span-3"
-                            />
-                          </div>
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="duration" className="text-right">
-                              Duration
-                            </Label>
-                            <Input
-                              id="duration"
-                              name="duration"
-                              value={newPrescription.duration}
-                              onChange={handleNewPrescriptionChange}
-                              className="col-span-3"
-                            />
-                          </div>
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="instructions" className="text-right">
-                              Instructions
-                            </Label>
-                            <Textarea
-                              id="instructions"
-                              name="instructions"
-                              value={newPrescription.instructions}
-                              onChange={handleNewPrescriptionChange}
-                              className="col-span-3"
-                            />
-                          </div>
-                        </div>
-                        <DialogFooter>
-                          <Button type="submit">Save Prescription</Button>
-                        </DialogFooter>
-                      </form>
-                    </DialogContent>
-                  </Dialog>
+                  <div className="flex flex-wrap gap-4">
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-blue-200">Next Appointment</p>
+                      <p className="text-lg font-semibold">In 30 minutes</p>
+                      <p className="text-sm text-blue-200">with Patient John Doe</p>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-blue-200">Today's Schedule</p>
+                      <Progress value={60} className="mt-2 bg-blue-300" />
+                      <p className="mt-1 text-sm text-blue-200">12 out of 20 appointments completed</p>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
 
-              {/* Filters and Search */}
-              <div className="flex flex-col gap-4 md:flex-row md:items-center">
-                <div className="relative flex-1">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-                  <Input
-                    placeholder="Search prescriptions..."
-                    className="pl-8"
-                  />
-                </div>
-                <Select defaultValue="all">
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Prescriptions</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Select defaultValue="recent">
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Sort by" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="recent">Most Recent</SelectItem>
-                    <SelectItem value="oldest">Oldest First</SelectItem>
-                    <SelectItem value="patient-az">Patient Name A-Z</SelectItem>
-                    <SelectItem value="patient-za">Patient Name Z-A</SelectItem>
-                  </SelectContent>
-                </Select>
+              {/* Quick Actions */}
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {[
+                  { title: "View Schedule", description: "Check your appointments", action: "View", color: "bg-[--second]" },
+                  { title: "Patient Records", description: "Access medical histories", action: "Open", color: "bg-[--first]" },
+                  { title: "Write Prescription", description: "Create new prescriptions", action: "Start", color: "bg-[--second]" },
+                  { title: "Lab Results", description: "Review recent lab work", action: "Review", color: "bg-[--first]" },
+                ].map((item, index) => (
+                  <Card key={index} className={`${item.color} text-white`}>
+                    <CardHeader>
+                      <CardTitle>{item.title}</CardTitle>
+                      <CardDescription className="text-white/80">{item.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button variant="secondary" className="w-full bg-white text-gray-800 hover:bg-gray-100">
+                        {item.action}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
 
-              {/* Prescriptions List */}
+              {/* Main Dashboard Tabs */}
+              <Tabs defaultValue="appointments" className="space-y-4">
+                <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 bg-[#EDF2F7] p-1 rounded-lg">
+                  {["Appointments", "Patients", "Prescriptions", "Lab Results"].map((tab) => (
+                    <TabsTrigger key={tab} value={tab.toLowerCase().replace(' ', '-')} className="rounded-md data-[state=active]:bg-white">
+                      {tab}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+                <TabsContent value="appointments" className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Today's Appointments</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {[
+                          { patient: "John Doe", time: "10:00 AM", type: "Check-up" },
+                          { patient: "Jane Smith", time: "11:30 AM", type: "Follow-up" },
+                          { patient: "Mike Johnson", time: "2:00 PM", type: "Consultation" }
+                        ].map((appointment, index) => (
+                          <div key={index} className="flex items-center justify-between rounded-lg bg-[#EDF2F7] p-4">
+                            <div className="flex items-center gap-4">
+                              <Avatar>
+                                <AvatarFallback>{appointment.patient.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <h3 className="font-semibold">{appointment.patient}</h3>
+                                <p className="text-sm text-gray-500">{appointment.time} - {appointment.type}</p>
+                              </div>
+                            </div>
+                            <div className="space-x-2">
+                              <Button variant="outline" size="sm">View Details</Button>
+                              <Button variant="ghost" size="sm">Reschedule</Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+                <TabsContent value="patients" className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Recent Patients</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {[
+                          { name: "Emily Johnson", age: 35, lastVisit: "2 days ago", condition: "Hypertension" },
+                          { name: "Michael Chen", age: 28, lastVisit: "1 week ago", condition: "Diabetes" },
+                          { name: "Sarah Williams", age: 42, lastVisit: "3 days ago", condition: "Arthritis" }
+                        ].map((patient, index) => (
+                          <div key={index} className="rounded-lg bg-[#EDF2F7] p-4">
+                            <h3 className="font-semibold">{patient.name}</h3>
+                            <p className="text-sm text-gray-500">Age: {patient.age} | Last Visit: {patient.lastVisit}</p>
+                            <p className="text-sm text-gray-500">Condition: {patient.condition}</p>
+                            <div className="mt-2 space-x-2">
+                              <Button variant="outline" size="sm">View Records</Button>
+                              <Button variant="ghost" size="sm">Schedule Follow-up</Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+                <TabsContent value="prescriptions" className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Recent Prescriptions</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {[
+                          { patient: "John Doe", medication: "Amoxicillin", dosage: "500mg - 3 times daily", duration: "7 days" },
+                          { patient: "Jane Smith", medication: "Lisinopril", dosage: "10mg - Once daily", duration: "30 days" },
+                          { patient: "Mike Johnson", medication: "Metformin", dosage: "1000mg - Twice daily", duration: "90 days" }
+                        ].map((prescription, index) => (
+                          <div key={index} className="rounded-lg bg-[#EDF2F7] p-4">
+                            <h3 className="font-semibold">{prescription.patient}</h3>
+                            <p className="text-sm text-gray-500">{prescription.medication} - {prescription.dosage}</p>
+                            <p className="text-sm text-gray-500">Duration: {prescription.duration}</p>
+                            <div className="mt-2 space-x-2">
+                              <Button variant="outline" size="sm">Edit Prescription</Button>
+                              <Button variant="ghost" size="sm">Print</Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+                <TabsContent value="lab-results" className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Recent Lab Results</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {[
+                          { patient: "Emily Johnson", test: "Complete Blood Count", date: "2 days ago", status: "Normal" },
+                          { patient: "Michael Chen", test: "Lipid Panel", date: "1 week ago", status: "Abnormal" },
+                          { patient: "Sarah Williams", test: "Thyroid Function", date: "3 days ago", status: "Pending" }
+                        ].map((result, index) => (
+                          <div key={index} className="flex items-center justify-between rounded-lg bg-[#EDF2F7] p-4">
+                            <div>
+                              <h3 className="font-semibold">{result.patient}</h3>
+                              <p className="text-sm text-gray-500">{result.test}</p>
+                              <p className="text-sm text-gray-500">Date: {result.date}</p>
+                            </div>
+                            <div>
+                              <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                                result.status === 'Normal' ? 'bg-green-100 text-green-800' :
+                                result.status === 'Abnormal' ? 'bg-red-100 text-red-800' :
+                                'bg-yellow-100 text-yellow-800'
+                              }`}>
+                                {result.status}
+                              </span>
+                              <Button variant="outline" size="sm" className="ml-2">View Details</Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
+
+              {/* Medical Insights */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Recent Prescriptions</CardTitle>
+                  <CardTitle>Medical Insights & Reminders</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {prescriptions.map((prescription, index) => (
-                      <div
-                        key={index}
-                        className="flex flex-col gap-4 rounded-lg border p-4 md:flex-row md:items-center md:justify-between"
-                      >
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <FileText className="h-4 w-4 text-[--first]" />
-                            <h3 className="font-semibold">{prescription.patient}</h3>
-                          </div>
-                          <p className="text-sm text-gray-500">
-                            {prescription.medication} - {prescription.dosage}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            Prescribed: {prescription.date}
-                          </p>
-                          <div className="flex items-center gap-2">
-                            <span
-                              className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
-                                prescription.status === 'Active'
-                                  ? 'bg-green-100 text-green-700'
-                                  : prescription.status === 'Completed'
-                                  ? 'bg-gray-100 text-gray-700'
-                                  : 'bg-red-100 text-red-700'
-                              }`}
-                            >
-                              {prescription.status}
-                            </span>
-                            <span className="text-xs text-gray-500">
-                              Duration: {prescription.duration}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          <Button variant="outline" size="sm">
-                            View Details
-                          </Button>
-                          <Button variant="outline" size="sm">
-                            Print
-                          </Button>
-                          <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
-                            Cancel
-                          </Button>
-                        </div>
+                    {[
+                      { title: "Patient Follow-up", message: "Remember to follow up with John Doe about his blood pressure medication.", color: "bg-blue-50 text-blue-700" },
+                      { title: "New Research", message: "Recent study on diabetes treatment published in JAMA. Consider reviewing for potential application.", color: "bg-green-50 text-green-700" },
+                      { title: "Vaccination Campaign", message: "Flu vaccination campaign starts next week. Prepare patient recommendations.", color: "bg-yellow-50 text-yellow-700" }
+                    ].map((insight, index) => (
+                      <div key={index} className={`rounded-lg ${insight.color} p-4`}>
+                        <h3 className="font-semibold">{insight.title}</h3>
+                        <p className="text-sm">{insight.message}</p>
                       </div>
                     ))}
                   </div>
@@ -254,47 +230,3 @@ export default function PrescriptionsPage() {
     </div>
   )
 }
-
-const prescriptions = [
-  {
-    patient: "John Doe",
-    medication: "Amoxicillin",
-    dosage: "500mg - 3 times daily",
-    duration: "7 days",
-    date: "Nov 26, 2023",
-    status: "Active"
-  },
-  {
-    patient: "Jane Smith",
-    medication: "Lisinopril",
-    dosage: "10mg - Once daily",
-    duration: "30 days",
-    date: "Nov 25, 2023",
-    status: "Active"
-  },
-  {
-    patient: "Mike Johnson",
-    medication: "Metformin",
-    dosage: "1000mg - Twice daily",
-    duration: "90 days",
-    date: "Nov 24, 2023",
-    status: "Completed"
-  },
-  {
-    patient: "Sarah Williams",
-    medication: "Omeprazole",
-    dosage: "20mg - Once daily",
-    duration: "14 days",
-    date: "Nov 23, 2023",
-    status: "Cancelled"
-  },
-  {
-    patient: "David Brown",
-    medication: "Atorvastatin",
-    dosage: "40mg - Once daily",
-    duration: "30 days",
-    date: "Nov 22, 2023",
-    status: "Active"
-  }
-]
-

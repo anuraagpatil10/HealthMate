@@ -45,12 +45,11 @@ export default function PrescriptionsPage() {
 
     return (
         <>
-            <ToastContainer />
             <div className="flex min-h-screen bg-[#F0F4F8]">
                 <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
                 <div className="flex-1 overflow-hidden">
                     <Header setSidebarOpen={setSidebarOpen} />
-                    <ScrollArea className="h-[calc(100vh-4rem)]">
+                    <ScrollArea className="h-[calc(100vh-5rem)]">
                         <main className="p-6">
                             <div className="container mx-auto p-6 bg-[#F0F4F8]">
                                 <h1 className="text-3xl font-bold text-[#1A365D] mb-6">My Prescriptions</h1>

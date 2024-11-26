@@ -44,9 +44,6 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }) {
             { icon: MessageSquare, label: 'Messages' , path: '/doctor/messages'},
             { icon: Clipboard, label: 'Prescriptions' , path: '/doctor/prescriptions'},
             { icon: Activity, label: 'Lab Results' , path: '/doctor/lab-results'},
-            { icon: Stethoscope, label: 'Diagnoses' , path: '/doctor/diagnoses'},
-            { icon: Target, label: 'Treatment Plans' , path: '/doctor/treatment-plans'},
-            { icon: Settings, label: 'Settings' , path: '/doctor/settings'},
           ].map((item, index) => (
             <Link key={index} href={item.path}>
               <Button

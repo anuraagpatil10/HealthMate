@@ -1,192 +1,162 @@
 'use client'
 
 import { useState } from 'react'
-import { MessageSquare, Search, Send, Phone, Video } from 'lucide-react'
+import { Search, Send } from 'lucide-react'
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import Sidebar from '../../components/doctor/Sidebar'
-import Header from '../../components/doctor/Header'
+import { Textarea } from "@/components/ui/textarea"
+import Header from "@/components/doctor/Header" // Adjust the import path based on your file structure
+import Sidebar from "@/components/doctor/Sidebar" // Adjust the import path based on your file structure
 
 export default function MessagesPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [selectedConversation, setSelectedConversation] = useState(null)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedContact, setSelectedContact] = useState(null)
   const [newMessage, setNewMessage] = useState('')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  const handleSendMessage = (e) => {
-    e.preventDefault()
-    console.log('Sending message:', newMessage)
-    // Here you would typically send this message to your backend
-    setNewMessage('')
+  const contacts = [
+    { id: 1, name: "John Doe", role: "Patient", lastMessage: "That's great news! Thank you for letting me know.", lastMessageTime: "10:35 AM", unreadCount: 0 },
+    { id: 2, name: "Jane Smith", role: "Patient", lastMessage: "Good morning, Dr. Chen. I'm feeling much better, thank you.", lastMessageTime: "Yesterday", unreadCount: 0 },
+    { id: 3, name: "Emily Davis", role: "Patient", lastMessage: "Thank you for the update.", lastMessageTime: "Yesterday", unreadCount: 2 },
+    { id: 4, name: "Michael Brown", role: "Patient", lastMessage: "I have a question about my medication.", lastMessageTime: "2 days ago", unreadCount: 0 },
+    { id: 5, name: "Sarah Johnson", role: "Patient", lastMessage: "Can I reschedule my appointment?", lastMessageTime: "3 days ago", unreadCount: 1 },
+  ]
+
+  const messages = {
+    1: [
+      { id: 1, senderId: 0, content: "Hello! Your latest test results are ready. Everything looks good!", timestamp: "10:30 AM" },
+      { id: 2, senderId: 1, content: "That's great news! Thank you for letting me know.", timestamp: "10:35 AM" },
+      { id: 3, senderId: 0, content: "You're welcome. Do you have any questions about the results?", timestamp: "10:37 AM" },
+    ],
+    2: [
+      { id: 1, senderId: 0, content: "Good morning! How are you feeling today?", timestamp: "Yesterday, 9:00 AM" },
+      { id: 2, senderId: 1, content: "Good morning, Dr. Chen. I'm feeling much better, thank you.", timestamp: "Yesterday, 9:15 AM" },
+      { id: 3, senderId: 0, content: "That's wonderful to hear. Keep taking your medication as prescribed.", timestamp: "Yesterday, 9:20 AM" },
+    ],
+    // Add messages for other contacts as needed
+  }
+
+  const filteredContacts = contacts.filter(contact => 
+    contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    contact.role.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
+  const sendMessage = () => {
+    if (selectedContact && newMessage.trim()) {
+      const newMessageObj = {
+        id: messages[selectedContact.id].length + 1,
+        senderId: 0, // 0 represents the current user
+        content: newMessage,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }
+      messages[selectedContact.id] = [...messages[selectedContact.id], newMessageObj]
+      setNewMessage('')
+      // In a real app, you would also update the lastMessage and lastMessageTime for the contact
+    }
   }
 
   return (
-    <div className="flex min-h-screen bg-secondary">
+    <div className="flex min-h-screen bg-[#F0F4F8]">
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       <div className="flex-1 overflow-hidden">
         <Header setSidebarOpen={setSidebarOpen} />
-        <div className="h-[calc(100vh-5rem)] flex">
-          {/* Conversations List */}
-          <Card className="w-1/3 border-r">
-            <CardHeader>
-              <CardTitle>Messages</CardTitle>
-              <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-                <Input
-                  placeholder="Search conversations..."
-                  className="pl-8"
-                />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-[calc(100vh-13rem)]">
-                {conversations.map((conversation, index) => (
-                  <div
-                    key={index}
-                    className={`flex items-center gap-4 p-4 cursor-pointer hover:bg-gray-100 ${
-                      selectedConversation === conversation.id ? 'bg-gray-100' : ''
-                    }`}
-                    onClick={() => setSelectedConversation(conversation.id)}
-                  >
-                    <Avatar>
-                      <AvatarImage src={conversation.avatar} alt={conversation.name} />
-                      <AvatarFallback>{conversation.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold truncate">{conversation.name}</h3>
-                      <p className="text-sm text-gray-500 truncate">{conversation.lastMessage}</p>
+        <div className="container mx-auto p-6 bg-[#F0F4F8] h-screen">
+          <h1 className="text-3xl font-bold text-[#1A365D] mb-6">Messages</h1>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-[calc(100vh-150px)]">
+            {/* Contacts List */}
+            <Card className="h-full">
+              <CardContent className="p-4">
+                <div className="mb-4">
+                  <Search className="absolute ml-2 mt-2.5 h-4 w-4 text-gray-500" />
+                  <Input
+                    type="search"
+                    placeholder="Search contacts..."
+                    className="pl-8 bg-white"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <ScrollArea className="h-[calc(100vh-250px)]">
+                  {filteredContacts.map((contact) => (
+                    <div 
+                      key={contact.id} 
+                      className={`mb-2 p-2 rounded-lg cursor-pointer ${selectedContact?.id === contact.id ? 'bg-[#4FD1C5] text-white' : 'hover:bg-gray-100'}`}
+                      onClick={() => setSelectedContact(contact)}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <Avatar>
+                          <AvatarImage src={`/placeholder.svg?${contact.id}`} alt={contact.name} />
+                          <AvatarFallback>{contact.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1">
+                          <h3 className="font-semibold">{contact.name}</h3>
+                          <p className="text-sm text-gray-500">{contact.role}</p>
+                        </div>
+                        {contact.unreadCount > 0 && (
+                          <div className="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+                            {contact.unreadCount}
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-sm mt-1 truncate">{contact.lastMessage}</p>
+                      <p className="text-xs text-right mt-1">{contact.lastMessageTime}</p>
                     </div>
-                    <span className="text-xs text-gray-500">{conversation.time}</span>
-                  </div>
-                ))}
-              </ScrollArea>
-            </CardContent>
-          </Card>
+                  ))}
+                </ScrollArea>
+              </CardContent>
+            </Card>
 
-          {/* Chat Area */}
-          <Card className="flex-1 flex flex-col">
-            {selectedConversation ? (
-              <>
-                <CardHeader className="flex-shrink-0 border-b">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
+            {/* Chat Window */}
+            <Card className="h-full">
+              <CardContent className="p-4 flex flex-col h-full">
+                {selectedContact ? (
+                  <>
+                    <div className="flex items-center space-x-3 mb-4">
                       <Avatar>
-                        <AvatarImage src={conversations[0].avatar} alt={conversations[0].name} />
-                        <AvatarFallback>{conversations[0].name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                        <AvatarImage src={`/placeholder.svg?${selectedContact.id}`} alt={selectedContact.name} />
+                        <AvatarFallback>{selectedContact.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                       </Avatar>
                       <div>
-                        <CardTitle>{conversations[0].name}</CardTitle>
-                        <p className="text-sm text-gray-500">Online</p>
+                        <h2 className="font-semibold text-lg">{selectedContact.name}</h2>
+                        <p className="text-sm text-gray-500">{selectedContact.role}</p>
                       </div>
                     </div>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="icon">
-                        <Phone className="h-4 w-4" />
+                    <ScrollArea className="flex-1 mb-4">
+                      {messages[selectedContact.id]?.map((message) => (
+                        <div key={message.id} className={`mb-2 ${message.senderId === 0 ? 'text-right' : 'text-left'}`}>
+                          <div className={`inline-block p-2 rounded-lg ${message.senderId === 0 ? 'bg-[#4FD1C5] text-white' : 'bg-gray-100'}`}>
+                            {message.content}
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1">{message.timestamp}</p>
+                        </div>
+                      ))}
+                    </ScrollArea>
+                    <div className="flex space-x-2">
+                      <Textarea 
+                        placeholder="Type your message here..." 
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        className="flex-1"
+                      />
+                      <Button onClick={sendMessage} className="bg-[#4FD1C5] hover:bg-[#38B2AC] text-white">
+                        <Send className="h-4 w-4" />
                       </Button>
-                      <Button variant="outline" size="icon">
-                        <Video className="h-4 w-4" />
-                      </Button>
                     </div>
+                  </>
+                ) : (
+                  <div className="flex items-center justify-center h-full text-gray-500">
+                    Select a contact to start chatting
                   </div>
-                </CardHeader>
-                <ScrollArea className="flex-1 p-4">
-                  {/* Chat messages would go here */}
-                  <div className="space-y-4">
-                    <div className="flex items-start gap-2">
-                      <Avatar>
-                        <AvatarImage src={conversations[0].avatar} alt={conversations[0].name} />
-                        <AvatarFallback>{conversations[0].name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                      </Avatar>
-                      <div className="bg-gray-100 rounded-lg p-2 max-w-[70%]">
-                        <p>Hello Dr. Smith, I've been experiencing some discomfort in my lower back. Can you advise?</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-2 justify-end">
-                      <div className="bg-[--first] text-white rounded-lg p-2 max-w-[70%]">
-                        <p>Hello! I'm sorry to hear that. Can you describe the pain? Is it sharp or dull? Does it radiate to other areas?</p>
-                      </div>
-                      <Avatar>
-                        <AvatarFallback>DS</AvatarFallback>
-                      </Avatar>
-                    </div>
-                    {/* More messages would be added here */}
-                  </div>
-                </ScrollArea>
-                <CardContent className="flex-shrink-0 border-t p-4">
-                  <form onSubmit={handleSendMessage} className="flex gap-2">
-                    <Input
-                      placeholder="Type a message..."
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      className="flex-1"
-                    />
-                    <Button type="submit">
-                      <Send className="h-4 w-4 mr-2" />
-                      Send
-                    </Button>
-                  </form>
-                </CardContent>
-              </>
-            ) : (
-              <div className="flex items-center justify-center h-full">
-                <div className="text-center">
-                  <MessageSquare className="h-12 w-12 mx-auto text-gray-400" />
-                  <h2 className="mt-2 font-semibold text-xl">No Conversation Selected</h2>
-                  <p className="text-gray-500">Choose a conversation from the list to start messaging</p>
-                </div>
-              </div>
-            )}
-          </Card>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </div>
   )
 }
-
-const conversations = [
-  {
-    id: '1',
-    name: "Alice Johnson",
-    avatar: "/placeholder.svg?height=40&width=40",
-    lastMessage: "Hello Dr. Smith, I've been experiencing...",
-    time: "10:30 AM"
-  },
-  {
-    id: '2',
-    name: "Bob Smith",
-    avatar: "/placeholder.svg?height=40&width=40",
-    lastMessage: "Thank you for the prescription. I...",
-    time: "Yesterday"
-  },
-  {
-    id: '3',
-    name: "Carol Williams",
-    avatar: "/placeholder.svg?height=40&width=40",
-    lastMessage: "When is my next appointment?",
-    time: "2 days ago"
-  },
-  {
-    id: '4',
-    name: "David Brown",
-    avatar: "/placeholder.svg?height=40&width=40",
-    lastMessage: "I'm feeling much better now, thanks!",
-    time: "1 week ago"
-  },
-  {
-    id: '5',
-    name: "Eva Davis",
-    avatar: "/placeholder.svg?height=40&width=40",
-    lastMessage: "Can we reschedule my appointment?",
-    time: "2 weeks ago"
-  }
-]
-

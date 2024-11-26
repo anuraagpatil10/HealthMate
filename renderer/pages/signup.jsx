@@ -159,6 +159,18 @@ export default function SignUp() {
           </p>
         </div>
       </div>
+      <div className="bg-[--second] md:w-3/5 p-10 flex flex-col gap-5 items-center text-center justify-center text-white">
+        <Logo logoSize="text-2xl md:text-4xl" imgSize={50} />
+        <p className="text-xl my-8">
+          Discover the power of personalized health insights and seamless tracking with HealthMate.
+        </p>
+        <ul className="text-left space-y-2">
+          <li>✓ Secure and private health data management</li>
+          <li>✓ Easy appointment scheduling</li>
+          <li>✓ Personalized health insights</li>
+          <li>✓ 24/7 access to your health information</li>
+        </ul>
+      </div>
     </div>
   );
 }
