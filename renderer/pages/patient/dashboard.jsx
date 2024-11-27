@@ -16,6 +16,11 @@ import Header from "@/components/patient/Header"
 
 export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const router = useRouter();
+
+  const handleButtonClick = (path) => {
+    router.push(path);
+  };
 
   return (
     <div className="flex min-h-screen bg-secondary">
@@ -55,9 +60,9 @@ export default function DashboardPage() {
               {/* Quick Actions */}
               <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-3">
                 {[
-                  { title: "Book Appointment", description: "Schedule a consultation", action: "Book Now", color: "bg-[--first]" },
-                  { title: "Upcoming Appointments", description: "View scheduled visits", action: "View All", color: "bg-[--second]" },
-                  { title: "Active Prescriptions", description: "Track your medications", action: "Manage", color: "bg-[--first]" },
+                  { title: "Book Appointment", description: "Schedule a consultation", action: "Book Now", color: "bg-[--first]", path: "/patient/doctors" },
+                  { title: "Upcoming Appointments", description: "View scheduled visits", action: "View All", color: "bg-[--second]", path: "/patient/appointments" },
+                  { title: "Active Prescriptions", description: "Track your medications", action: "Manage", color: "bg-[--first]", path: "/patient/prescriptions" },
                 ].map((item, index) => (
                   <Card key={index} className={`${item.color} text-white`}>
                     <CardHeader>
@@ -65,7 +70,11 @@ export default function DashboardPage() {
                       <CardDescription className="text-white/80">{item.description}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <Button variant="secondary" className="w-full bg-white text-gray-800 hover:bg-gray-100">
+                      <Button
+                        variant="secondary"
+                        className="w-full bg-white text-gray-800 hover:bg-gray-100"
+                        onClick={() => handleButtonClick(item.path)}
+                      >
                         {item.action}
                       </Button>
                     </CardContent>

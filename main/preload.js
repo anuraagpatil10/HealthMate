@@ -9,5 +9,6 @@ contextBridge.exposeInMainWorld('supabaseAPI', {
   loginWithGoogle: () => ipcRenderer.invoke('login-with-google'),
   getUserRole: () => ipcRenderer.invoke('get-user-role'),
   getPatientAppointments: (patientId) => ipcRenderer.invoke('get-patient-appointments', patientId), // Expose the getAppointments handler
-  saveAppointment: (appointment) => ipcRenderer.invoke('save-appointment', appointment) // Expose the saveAppointment handler
+  saveAppointment: (appointment) => ipcRenderer.invoke('save-appointment', appointment), // Expose the saveAppointment handler
+  getDoctors: () => ipcRenderer.invoke('get-doctors') // Expose the getDoctors handler
 });

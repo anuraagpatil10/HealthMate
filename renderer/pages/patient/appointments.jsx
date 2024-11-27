@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
 import { Bell, Calendar, ChevronLeft, ChevronRight, Clock, Filter, Menu, MoreVertical, Plus, Search, X } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -34,6 +35,8 @@ export default function PatientAppointmentsPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [currentDate, setCurrentDate] = useState(new Date())
   const [appointments, setAppointments] = useState([])
+  const [doctors, setDoctors] = useState([])
+  const router = useRouter()
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -42,7 +45,7 @@ export default function PatientAppointmentsPage() {
       const userSession = JSON.parse(accessToken.value);
       const patientId = userSession.user.id;
       const response = await window.supabaseAPI.getPatientAppointments(patientId);
-    
+      
       if (response.error) {
         console.error(response.error)
       } else {
@@ -50,37 +53,54 @@ export default function PatientAppointmentsPage() {
       }
     }
 
+    const fetchDoctors = async () => {
+      const response = await window.supabaseAPI.getDoctors()
+      if (response.error) {
+        console.error(response.error)
+      } else {
+        setDoctors(response.data)
+      }
+    }
+    
     fetchAppointments()
+    fetchDoctors()
   }, [])
-
+  
   const nextDay = () => {
     setCurrentDate(new Date(currentDate.setDate(currentDate.getDate() + 1)))
   }
-
+  
   const previousDay = () => {
     setCurrentDate(new Date(currentDate.setDate(currentDate.getDate() - 1)))
   }
-
+  
   const filteredAppointments = appointments.filter(appointment => 
     appointment.date === format(currentDate, 'yyyy-MM-dd')
   )
-
+  
   const handleSaveAppointment = async (event) => {
     event.preventDefault()
-    const formData = new FormData(event.currentTarget)
+    const cookies = await window.supabaseAPI.getCookies();
+    const accessToken = cookies.find(cookie => cookie.name === 'supabaseSession');
+    const userSession = JSON.parse(accessToken.value);
+    const patientId = userSession.user.id;
+    const formData = new FormData(event.target)
     const newAppointment = {
-      doctor: formData.get('doctor'),
+      doctor_id: formData.get('doctor_id'),
+      patient_id: patientId,
       date: formData.get('date'),
       time: formData.get('time'),
       type: formData.get('type'),
+      reason: formData.get('reason'), // Added reason
       status: 'Pending' // Default status
     }
+    newAppointment.date = format(new Date(newAppointment.date), 'yyyy-MM-dd')
     const response = await window.supabaseAPI.saveAppointment(newAppointment)
     if (response.error) {
       console.error(response.error)
-    } else {
-      setAppointments([...appointments, response.data])
+      return;
     }
+    router.reload() // Reload the current page
   }
 
   return (
@@ -131,10 +151,21 @@ export default function PatientAppointmentsPage() {
                       </DialogHeader>
                       <div className="grid gap-4 py-4">
                         <div className="grid grid-cols-4 items-center gap-4">
-                          <Label htmlFor="doctor" className="text-right">
+                          <Label htmlFor="doctor_id" className="text-right">
                             Doctor
                           </Label>
-                          <Input id="doctor" name="doctor" className="col-span-3" required />
+                          <Select id="doctor_id" name="doctor_id" required>
+                            <SelectTrigger className="col-span-3">
+                              <SelectValue placeholder="Select doctor" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {doctors.map((doctor) => (
+                                <SelectItem key={doctor.id} value={doctor.id}>
+                                  {doctor.name} - {doctor.specialty}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
                           <Label htmlFor="date" className="text-right">
@@ -162,6 +193,12 @@ export default function PatientAppointmentsPage() {
                               <SelectItem value="consultation">Consultation</SelectItem>
                             </SelectContent>
                           </Select>
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="reason" className="text-right">
+                            Reason
+                          </Label>
+                          <Input id="reason" name="reason" type="text" className="col-span-3" required />
                         </div>
                       </div>
                       <DialogFooter>

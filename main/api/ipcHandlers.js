@@ -8,7 +8,7 @@ const { loginWithGoogle } = require('./googleOAuth');
 const { getUserRole } = require('./getUserRole');
 const { getPatientAppointments } = require('./patient/getPatientAppointments'); // Import the getAppointments function
 const { saveAppointment } = require('./saveAppointment'); // Import the saveAppointment function
-
+const { getDoctors } = require('./getDoctors'); // Import the getDoctors function
 function registerIpcHandlers(mainWindow) {
   ipcMain.handle('login', async (event, email, password) => {
     return await login(email, password);
@@ -53,6 +53,9 @@ function registerIpcHandlers(mainWindow) {
   });  
   ipcMain.handle('save-appointment', async (event, appointment) => {
     return await saveAppointment(appointment); // Handle saving new appointment
+  });
+  ipcMain.handle('get-doctors', async () => {
+    return await getDoctors(); // Handle fetching doctors
   });
 }
 
