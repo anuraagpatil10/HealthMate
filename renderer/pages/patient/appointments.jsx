@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { Calendar, Clock, MapPin, MoreVertical, Plus, Search } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Bell, Calendar, ChevronLeft, ChevronRight, Clock, Filter, Menu, MoreVertical, Plus, Search, X } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -9,45 +9,78 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
 import { format } from 'date-fns'
 import Sidebar from "@/components/patient/Sidebar" // Adjust the import path based on your file structure
 import Header from "@/components/patient/Header" // Adjust the import path based on your file structure
 
 export default function PatientAppointmentsPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [appointments, setAppointments] = useState([
-    { id: 1, doctor: "Dr. Sarah Wilson", specialty: "Cardiologist", date: "2023-06-15", time: "10:00 AM", location: "Heart Health Clinic" },
-    { id: 2, doctor: "Dr. Michael Chen", specialty: "General Physician", date: "2023-06-18", time: "2:30 PM", location: "City Medical Center" },
-    { id: 3, doctor: "Dr. Emily Johnson", specialty: "Dermatologist", date: "2023-06-20", time: "11:15 AM", location: "Skin Care Institute" },
-    { id: 4, doctor: "Dr. David Lee", specialty: "Orthopedic Surgeon", date: "2023-06-22", time: "9:00 AM", location: "Bone & Joint Center" },
-    { id: 5, doctor: "Dr. Lisa Chen", specialty: "Gynecologist", date: "2023-06-25", time: "3:45 PM", location: "Women's Health Clinic" },
-  ])
+  const [currentDate, setCurrentDate] = useState(new Date())
+  const [appointments, setAppointments] = useState([])
+
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      const cookies = await window.supabaseAPI.getCookies();
+      const accessToken = cookies.find(cookie => cookie.name === 'supabaseSession');
+      const userSession = JSON.parse(accessToken.value);
+      const patientId = userSession.user.id;
+      const response = await window.supabaseAPI.getPatientAppointments(patientId);
+    
+      if (response.error) {
+        console.error(response.error)
+      } else {
+        setAppointments(response.data)
+      }
+    }
+
+    fetchAppointments()
+  }, [])
+
+  const nextDay = () => {
+    setCurrentDate(new Date(currentDate.setDate(currentDate.getDate() + 1)))
+  }
+
+  const previousDay = () => {
+    setCurrentDate(new Date(currentDate.setDate(currentDate.getDate() - 1)))
+  }
 
   const filteredAppointments = appointments.filter(appointment => 
-    appointment.doctor.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    appointment.specialty.toLowerCase().includes(searchTerm.toLowerCase())
+    appointment.date === format(currentDate, 'yyyy-MM-dd')
   )
 
-  const bookAppointment = (event) => {
+  const handleSaveAppointment = async (event) => {
     event.preventDefault()
     const formData = new FormData(event.currentTarget)
     const newAppointment = {
-      id: appointments.length + 1,
       doctor: formData.get('doctor'),
-      specialty: formData.get('specialty'),
-      date: format(new Date(formData.get('date')), 'yyyy-MM-dd'),
+      date: formData.get('date'),
       time: formData.get('time'),
-      location: formData.get('location')
+      type: formData.get('type'),
+      status: 'Pending' // Default status
     }
-    setAppointments([...appointments, newAppointment])
+    const response = await window.supabaseAPI.saveAppointment(newAppointment)
+    if (response.error) {
+      console.error(response.error)
+    } else {
+      setAppointments([...appointments, response.data])
+    }
   }
 
   return (
@@ -55,34 +88,45 @@ export default function PatientAppointmentsPage() {
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       <div className="flex-1 overflow-hidden">
         <Header setSidebarOpen={setSidebarOpen} />
+
         <ScrollArea className="h-[calc(100vh-5rem)]">
           <main className="p-6">
-            <div className="container mx-auto p-6 bg-[#F0F4F8]">
-              <h1 className="text-3xl font-bold text-[#1A365D] mb-6">My Appointments</h1>
-              
-              <div className="flex justify-between items-center mb-6">
-                <div className="relative w-64">
-                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
-                  <Input
-                    type="search"
-                    placeholder="Search appointments..."
-                    className="pl-8 bg-white"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
+            <div className="mb-6 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Button variant="outline" size="icon" onClick={previousDay}>
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <h3 className="text-lg font-semibold">
+                  {currentDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                </h3>
+                <Button variant="outline" size="icon" onClick={nextDay}>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="flex items-center gap-4">
+                <Select defaultValue="all">
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Filter by status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Appointments</SelectItem>
+                    <SelectItem value="confirmed">Confirmed</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="cancelled">Cancelled</SelectItem>
+                  </SelectContent>
+                </Select>
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button className="bg-[--first] hover:bg-[--second] text-white">
-                      <Plus className="mr-2 h-4 w-4" /> Book New Appointment
+                    <Button className="bg-[--second] hover:bg-[--first]">
+                      <Plus className="mr-2 h-4 w-4" /> New Appointment
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-[425px]">
-                    <form onSubmit={bookAppointment}>
+                    <form onSubmit={handleSaveAppointment}>
                       <DialogHeader>
-                        <DialogTitle>Book New Appointment</DialogTitle>
+                        <DialogTitle>New Appointment</DialogTitle>
                         <DialogDescription>
-                          Enter the details for your new appointment. Click book when you're done.
+                          Fill in the details for the new appointment. Click save when you're done.
                         </DialogDescription>
                       </DialogHeader>
                       <div className="grid gap-4 py-4">
@@ -93,90 +137,88 @@ export default function PatientAppointmentsPage() {
                           <Input id="doctor" name="doctor" className="col-span-3" required />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
-                          <Label htmlFor="specialty" className="text-right">
-                            Specialty
-                          </Label>
-                          <Input id="specialty" name="specialty" className="col-span-3" required />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
                           <Label htmlFor="date" className="text-right">
                             Date
                           </Label>
-                          <Input id="date" name="date" className="col-span-3" type="date" required />
+                          <Input id="date" name="date" type="date" className="col-span-3" required />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
                           <Label htmlFor="time" className="text-right">
                             Time
                           </Label>
-                          <Input id="time" name="time" className="col-span-3" type="time" required />
+                          <Input id="time" name="time" type="time" className="col-span-3" required />
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
-                          <Label htmlFor="location" className="text-right">
-                            Location
+                          <Label htmlFor="type" className="text-right">
+                            Type
                           </Label>
-                          <Input id="location" name="location" className="col-span-3" required />
+                          <Select name="type">
+                            <SelectTrigger className="col-span-3">
+                              <SelectValue placeholder="Select appointment type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="check-up">Check-up</SelectItem>
+                              <SelectItem value="follow-up">Follow-up</SelectItem>
+                              <SelectItem value="consultation">Consultation</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
                       </div>
                       <DialogFooter>
-                        <Button type="submit" className="bg-[--first] hover:bg-[--second] text-white">Book Appointment</Button>
+                        <Button className="bg-[--second] hover:bg-[--first]" type="submit">Save appointment</Button>
                       </DialogFooter>
                     </form>
                   </DialogContent>
                 </Dialog>
               </div>
+            </div>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Upcoming Appointments</CardTitle>
-                  <CardDescription>View and manage your scheduled appointments</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ScrollArea className="h-[600px] pr-4">
-                    {filteredAppointments.map((appointment) => (
-                      <div key={appointment.id} className="mb-4 p-4 bg-white rounded-lg shadow">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-4">
-                            <Avatar>
-                              <AvatarImage src={`/placeholder.svg?${appointment.id}`} alt={appointment.doctor} />
-                              <AvatarFallback>{appointment.doctor.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <h3 className="font-semibold text-[#2D3748]">{appointment.doctor}</h3>
-                              <p className="text-sm text-gray-500">{appointment.specialty}</p>
-                            </div>
-                          </div>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm">
-                                <MoreVertical className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem>Reschedule</DropdownMenuItem>
-                              <DropdownMenuItem>Cancel Appointment</DropdownMenuItem>
-                              <DropdownMenuItem>View Details</DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
-                        <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
-                          <div className="flex items-center text-gray-500">
-                            <Calendar className="mr-2 h-4 w-4" />
-                            {appointment.date}
-                          </div>
-                          <div className="flex items-center text-gray-500">
-                            <Clock className="mr-2 h-4 w-4" />
-                            {appointment.time}
-                          </div>
-                          <div className="flex items-center text-gray-500 col-span-2">
-                            <MapPin className="mr-2 h-4 w-4" />
-                            {appointment.location}
-                          </div>
-                        </div>
+            <div className="grid gap-6">
+              {filteredAppointments.map((appointment) => (
+                <Card key={appointment.id}>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">
+                      {appointment.time}
+                    </CardTitle>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <span className="sr-only">Open menu</span>
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem>View Details</DropdownMenuItem>
+                        <DropdownMenuItem>Edit Appointment</DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>Cancel Appointment</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center space-x-4">
+                      <Avatar>
+                        <AvatarFallback>{appointment.doctor.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="text-sm font-medium leading-none">{appointment.doctor}</p>
+                        <p className="text-sm text-muted-foreground">{appointment.type}</p>
                       </div>
-                    ))}
-                  </ScrollArea>
-                </CardContent>
-              </Card>
+                    </div>
+                    <div className="mt-2 flex items-center justify-between">
+                      <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                        appointment.status === 'Confirmed' ? 'bg-green-100 text-green-800' :
+                        appointment.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-red-100 text-red-800'
+                      }`}>
+                        {appointment.status}
+                      </span>
+                      <Button variant="outline" size="sm">Start Session</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </main>
         </ScrollArea>
