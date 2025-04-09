@@ -29,7 +29,7 @@ export default function PatientNotificationsPage() {
       notif.id === id ? { ...notif, read: true } : notif
     ))
   }
-
+  
   const filteredNotifications = notifications.filter(notif => 
     filter === 'all' || (filter === 'unread' && !notif.read) || notif.type === filter
   )
@@ -43,7 +43,6 @@ export default function PatientNotificationsPage() {
       default: return <Bell className="h-4 w-4" />;
     }
   }
-
   return (
     <div className="flex min-h-screen bg-[#F0F4F8]">
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
