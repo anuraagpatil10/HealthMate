@@ -21,14 +21,14 @@ const Header = ({ setSidebarOpen }) => {
 
   const handleLogout = async () => {
     try {
-      const response = await window.supabaseAPI.logout();
+      const response = await window.healthMateAPI.logout();
       if (response.success) {
-        router.push('/login');
+        router.push("/login");
       } else {
-        console.error('Logout failed:', response.error);
+        console.error("Logout failed");
       }
     } catch (error) {
-      console.error('An unexpected error occurred during logout:', error);
+      console.error("Logout error:", error);
     }
   };
   return (

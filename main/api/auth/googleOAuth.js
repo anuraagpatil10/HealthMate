@@ -1,6 +1,5 @@
-// electron/api/googleOAuth.js
 const { session } = require('electron');
-const { api, API_BASE_URL, storeSessionInCookies } = require('../utils/httpClient');
+const { api, API_BASE_URL, storeSessionInCookies } = require('../../utils/httpClient');
 
 /**
  * Handles Google OAuth authentication flow
@@ -40,13 +39,13 @@ async function loginWithGoogle(mainWindow) {
     if (!response.data || !response.data.url) {
       console.error('Invalid OAuth URL response:', response.data);
       throw new Error('Failed to get Google OAuth URL');
-  }
+    }
 
     const authUrl = response.data.url;
     console.log('Auth URL received, redirecting user to Google login');
 
-  // Load Google OAuth URL in the main window
-  mainWindow.loadURL(authUrl);
+    // Load Google OAuth URL in the main window
+    mainWindow.loadURL(authUrl);
 
     // Handle the OAuth callback
     return await Promise.race([
@@ -54,7 +53,7 @@ async function loginWithGoogle(mainWindow) {
         // Flag to prevent multiple resolution
         let isResolved = false;
       
-    const handleNavigation = async (url) => {
+        const handleNavigation = async (url) => {
           try {
             console.log('Navigation detected to:', url);
             if (isResolved) return;
@@ -63,7 +62,7 @@ async function loginWithGoogle(mainWindow) {
               console.log('OAuth callback detected');
             
               // Extract token from URL
-          const urlObj = new URL(url);
+              const urlObj = new URL(url);
               const code = urlObj.searchParams.get('code');
               
               if (!code) {
@@ -91,7 +90,7 @@ async function loginWithGoogle(mainWindow) {
                   console.log('Tokens received successfully');
                   // Store tokens in cookie
                   storeSessionInCookies(tokenResponse.data.data.session);
-
+                  
                   // Redirect to dashboard based on user role
                   const role = tokenResponse.data.role || 'patient';
                   console.log(`User authenticated with role: ${role}`);
@@ -122,29 +121,29 @@ async function loginWithGoogle(mainWindow) {
                 }
               }
             }
-        } catch (error) {
+          } catch (error) {
             console.error('Error handling navigation:', error);
             if (!isResolved) {
               isResolved = true;
-          reject(error);
-        }
-      }
-    };
+              reject(error);
+            }
+          }
+        };
 
-    // Listen for URL changes
-    mainWindow.webContents.on('will-navigate', (event, url) => {
+        // Listen for URL changes
+        mainWindow.webContents.on('will-navigate', (event, url) => {
           console.log('will-navigate event:', url);
           if (url.includes(API_BASE_URL) && url.includes('/auth/callback')) {
-        event.preventDefault();
-        handleNavigation(url);
-      }
-    });
+            event.preventDefault();
+            handleNavigation(url);
+          }
+        });
 
-    mainWindow.webContents.on('did-navigate', (event, url) => {
+        mainWindow.webContents.on('did-navigate', (event, url) => {
           console.log('did-navigate event:', url);
-      handleNavigation(url);
-    });
-
+          handleNavigation(url);
+        });
+        
         // Additional safeguard for navigation failures
         mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
           console.error('Navigation failed:', errorCode, errorDescription);
@@ -171,4 +170,4 @@ async function loginWithGoogle(mainWindow) {
   }
 }
 
-export{ loginWithGoogle };
+export { loginWithGoogle }; 

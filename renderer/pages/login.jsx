@@ -33,7 +33,7 @@ export default function LoginPage() {
     setError(null);
     try {
       // Use IPC to call the login function in the main process
-      const response = await window.supabaseAPI.login(email, password);
+      const response = await window.healthMateAPI.login(email, password);
       
       if (response.error) {
         console.error(response.error);
@@ -41,11 +41,11 @@ export default function LoginPage() {
       } else {
         // Check for access token in cookies
         const checkAccessToken = async () => {
-          const cookies = await window.supabaseAPI.getCookies();
-          const accessToken = cookies.find(cookie => cookie.name === 'supabaseSession');
+          const cookies = await window.healthMateAPI.getCookies();
+          const accessToken = cookies.find(cookie => cookie.name === 'healthMateSession');
           if (accessToken) {
             // Fetch user role
-            const response = await window.supabaseAPI.getUserRole();
+            const response = await window.healthMateAPI.getUserRole();
             if (response.role !== role) {
               setError('Invalid role. Please select the correct role.');
               setLoading(false);
@@ -74,7 +74,7 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     try {
-      const response = await window.supabaseAPI.loginWithGoogle();
+      const response = await window.healthMateAPI.loginWithGoogle();
       if (response.error) {
         console.error(response.error);
         setError(response.error);

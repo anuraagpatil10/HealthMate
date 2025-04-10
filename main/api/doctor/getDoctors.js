@@ -1,26 +1,32 @@
-// electron/api/getDoctors.js
-const { api } = require('../utils/httpClient');
+const { api } = require('../../utils/httpClient');
+const { debugLog, errorLog, infoLog, warnLog } = require('../../utils/logger');
 
 /**
  * Retrieves list of all doctors
  * @returns {Promise<Object>} List of doctors or error
  */
 async function getDoctors() {
-  console.log('Fetching doctors list...');
+  infoLog('Fetching doctors list');
   
   try {
+    // Make API request according to documentation
+    debugLog('Requesting doctors data from API');
     const response = await api.get('/api/doctors');
     
     if (response.data && Array.isArray(response.data.doctors)) {
       const doctorsList = response.data.doctors;
-      console.log(`Retrieved ${doctorsList.length} doctors`);
+      infoLog(`Retrieved ${doctorsList.length} doctors`);
       
-      // Validate doctor data structure
+      // Validate and normalize doctor data according to API documentation
+      debugLog('Validating doctor data structure');
       const validatedDoctors = doctorsList.map(doctor => {
-        // Ensure each doctor has required fields
+        // Check for required fields based on API documentation
         if (!doctor.doctor_id) {
-          console.warn('Doctor missing ID:', doctor);
+          warnLog('Doctor missing ID', doctor);
         }
+        
+        // Return a validated doctor object with normalized field names
+        // to make it consistent across the application
         return {
           id: doctor.doctor_id || doctor.id,
           name: doctor.full_name || doctor.name || 'Unknown',
@@ -32,16 +38,17 @@ async function getDoctors() {
         };
       });
       
+      debugLog('Doctors data normalized successfully');
       return { data: validatedDoctors };
-  } else {
-      console.error('Invalid doctors data format received from API');
+    } else {
+      errorLog('Invalid doctors data format received from API', response.data);
       return { error: 'Invalid doctors data received', data: [] };
-  }
+    }
   } catch (error) {
     const errorMessage = error.response?.data?.message || error.message;
     const statusCode = error.response?.status;
     
-    console.error(`Error fetching doctors (${statusCode}):`, errorMessage);
+    errorLog(`Error fetching doctors (${statusCode})`, errorMessage);
     
     if (statusCode === 401) {
       return { error: 'Authentication required', data: [] };
@@ -56,3 +63,4 @@ async function getDoctors() {
   }
 }
 
+export { getDoctors }; 

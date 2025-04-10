@@ -1,5 +1,5 @@
-// electron/api/saveAppointment.js
-const { api } = require('../utils/httpClient');
+const { api } = require('../../utils/httpClient');
+const { debugLog, errorLog, infoLog, warnLog } = require('../../utils/logger');
 
 /**
  * Saves a new appointment
@@ -14,18 +14,18 @@ const { api } = require('../utils/httpClient');
  * @returns {Promise<Object>} Result object indicating success or error
  */
 async function saveAppointment(appointment) {
-  console.log('Saving new appointment');
+  infoLog('Saving new appointment');
   
-  // Input validation
+  // Input validation according to API documentation
   if (!appointment) {
-    console.error('Appointment data is required');
+    errorLog('Appointment data is required');
     return { error: 'Appointment data is required' };
   }
   
   const { doctor_id, patient_id, date, time, type } = appointment;
   
   if (!doctor_id || !patient_id || !date || !time) {
-    console.error('Missing required appointment fields:', { doctor_id, patient_id, date, time });
+    errorLog('Missing required appointment fields', { doctor_id, patient_id, date, time });
     return { 
       error: 'Doctor ID, Patient ID, date, and time are required',
       fields: { doctor_id, patient_id, date, time }
@@ -35,7 +35,7 @@ async function saveAppointment(appointment) {
   // Validate date format (YYYY-MM-DD)
   const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
   if (!dateRegex.test(date)) {
-    console.error(`Invalid date format: ${date}`);
+    errorLog(`Invalid date format: ${date}`);
     return { error: 'Date must be in YYYY-MM-DD format' };
   }
   
@@ -50,27 +50,31 @@ async function saveAppointment(appointment) {
     status: appointment.status || 'Pending'
   };
   
-  console.log('Sending appointment data to API:', appointmentData);
+  debugLog('Appointment data prepared for API', appointmentData);
   
   try {
+    // Make API request according to documentation
+    debugLog('Sending appointment data to API');
     const response = await api.post('/api/patient/appointments', appointmentData);
     
     if (response.data) {
-      console.log('Appointment saved successfully:', response.data);
+      infoLog('Appointment saved successfully');
+      debugLog('API response', response.data);
+      
       return { 
         data: response.data, 
         error: false,
         message: 'Appointment scheduled successfully'
       };
-  } else {
-      console.error('No data received from appointment creation API');
+    } else {
+      errorLog('No data received from appointment creation API');
       return { error: 'Failed to create appointment - no response data' };
     }
   } catch (error) {
     const errorMessage = error.response?.data?.message || error.message;
     const statusCode = error.response?.status;
     
-    console.error(`Error saving appointment (${statusCode}):`, errorMessage);
+    errorLog(`Error saving appointment (${statusCode})`, errorMessage);
     
     if (statusCode === 401) {
       return { error: 'Authentication required to schedule appointment' };
@@ -84,4 +88,4 @@ async function saveAppointment(appointment) {
   }
 }
 
-module.exports = { saveAppointment };
+module.exports = { saveAppointment }; 

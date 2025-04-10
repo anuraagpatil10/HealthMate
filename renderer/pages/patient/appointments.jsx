@@ -40,11 +40,11 @@ export default function PatientAppointmentsPage() {
 
   useEffect(() => {
     const fetchAppointments = async () => {
-      const cookies = await window.supabaseAPI.getCookies();
-      const accessToken = cookies.find(cookie => cookie.name === 'supabaseSession');
+      const cookies = await window.healthMateAPI.getCookies();
+      const accessToken = cookies.find(cookie => cookie.name === 'healthMateSession');
       const userSession = JSON.parse(accessToken.value);
       const patientId = userSession.user.id;
-      const response = await window.supabaseAPI.getPatientAppointments(patientId);
+      const response = await window.healthMateAPI.getPatientAppointments(patientId);
       
       if (response.error) {
         console.error(response.error)
@@ -54,7 +54,7 @@ export default function PatientAppointmentsPage() {
     }
 
     const fetchDoctors = async () => {
-      const response = await window.supabaseAPI.getDoctors()
+      const response = await window.healthMateAPI.getDoctors()
       if (response.error) {
         console.error(response.error)
       } else {
@@ -80,8 +80,8 @@ export default function PatientAppointmentsPage() {
   
   const handleSaveAppointment = async (event) => {
     event.preventDefault()
-    const cookies = await window.supabaseAPI.getCookies();
-    const accessToken = cookies.find(cookie => cookie.name === 'supabaseSession');
+    const cookies = await window.healthMateAPI.getCookies();
+    const accessToken = cookies.find(cookie => cookie.name === 'healthMateSession');
     const userSession = JSON.parse(accessToken.value);
     const patientId = userSession.user.id;
     const formData = new FormData(event.target)
@@ -95,7 +95,7 @@ export default function PatientAppointmentsPage() {
       status: 'Pending' // Default status
     }
     newAppointment.date = format(new Date(newAppointment.date), 'yyyy-MM-dd')
-    const response = await window.supabaseAPI.saveAppointment(newAppointment)
+    const response = await window.healthMateAPI.saveAppointment(newAppointment)
     if (response.error) {
       console.error(response.error)
       return;

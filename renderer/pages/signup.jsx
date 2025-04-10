@@ -36,7 +36,7 @@ export default function SignUp() {
     try {
       console.log("Role before API call: ", role); // Add logging here
       
-      const response = await window.supabaseAPI.signup(email, password, fullName, phoneNumber, gender, role);
+      const response = await window.healthMateAPI.signup(email, password, fullName, phoneNumber, gender, role);
       if (response.error) {
         console.error(response.error);
         setError(response.error);

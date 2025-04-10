@@ -1,5 +1,5 @@
-// electron/api/signup.js
-const { api } = require('../utils/httpClient');
+const { api } = require('../../utils/httpClient');
+const { debugLog, errorLog, infoLog, warnLog } = require('../../utils/logger');
 
 /**
  * Registers a new user account
@@ -12,41 +12,47 @@ const { api } = require('../utils/httpClient');
  * @returns {Promise<Object>} Registration result or error
  */
 async function signup(email, password, fullName, phoneNumber, gender, role) {
-  // Input validation
+  infoLog(`Signup attempt initiated for ${role} account`);
+  
+  // Input validation according to API documentation
   if (!email || !password || !fullName || !role) {
-    console.error('Missing required signup parameters');
+    errorLog('Missing required signup parameters', { email, fullName, role });
     return { error: 'Email, password, full name, and role are required' };
   }
   
   if (!['patient', 'doctor'].includes(role.toLowerCase())) {
-    console.error(`Invalid role provided: ${role}`);
+    errorLog(`Invalid role provided: ${role}`);
     return { error: 'Role must be either "patient" or "doctor"' };
   }
   
-  console.log(`Signup attempt for email: ${email}, role: ${role}`);
+  debugLog('Signup parameters validation successful', { email, role });
 
   try {
-    console.log('Sending signup request to backend API...');
+    debugLog('Sending signup request to backend API');
+    
+    // Make API request according to documentation
     const response = await api.post('/api/signup', {
-    email,
-    password,
+      email,
+      password,
       fullName,
       phoneNumber,
-        gender,                    
+      gender,
       role
     });
 
     if (response.data && response.data.data) {
-      console.log(`User registered successfully: ${email}`);
+      infoLog(`User registered successfully`, { email, role });
+      debugLog('Signup response', response.data);
       return { data: response.data.data };
     } else {
-      console.error('Signup response missing data');
+      errorLog('Signup response missing data', response.data);
       return { error: 'Invalid response from server' };
-  }
+    }
   } catch (error) {
     const errorMessage = error.response?.data?.message || error.message;
     const statusCode = error.response?.status;
-    console.error(`Signup Error (${statusCode}):`, errorMessage);
+    
+    errorLog(`Signup error (${statusCode})`, errorMessage);
     
     // Provide more specific error messages based on status codes
     if (statusCode === 409) {
@@ -56,7 +62,7 @@ async function signup(email, password, fullName, phoneNumber, gender, role) {
     }
     
     return { error: errorMessage || 'Registration failed' };
-}
+  }
 }
 
-export  { signup };
+export{ signup }; 

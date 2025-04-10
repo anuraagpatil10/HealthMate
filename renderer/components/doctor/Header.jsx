@@ -21,7 +21,7 @@ const Header = ({ setSidebarOpen }) => {
 
   const handleLogout = async () => {
     try {
-      const response = await window.supabaseAPI.logout();
+      const response = await window.healthMateAPI.logout();
       if (response.success) {
         router.push('/login');
       } else {

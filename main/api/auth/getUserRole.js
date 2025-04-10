@@ -1,21 +1,22 @@
-// electron/api/getUserRole.js
-const { api } = require('../utils/httpClient');
+const { api } = require('../../utils/httpClient');
 const { session } = require('electron');
+const { debugLog, errorLog, infoLog, warnLog } = require('../../utils/logger');
 
 /**
  * Retrieves the authenticated user's role
  * @returns {Promise<Object>} User role information or error
  */
 async function getUserRole() {
-  console.log('Fetching user role...');
+  infoLog('Fetching user role');
   
   try {
     // Check for valid session cookie
-  const cookies = await session.defaultSession.cookies.get({});
+    debugLog('Checking for valid session cookie');
+    const cookies = await session.defaultSession.cookies.get({});
     const accessToken = cookies.find(cookie => cookie.name === 'healthMateSession');
     
     if (!accessToken) {
-      console.error('No access token found in cookies');
+      errorLog('No access token found in cookies');
       return { error: 'No access token found' };
     }
     
@@ -26,40 +27,42 @@ async function getUserRole() {
       if (!sessionData.access_token) {
         throw new Error('Invalid token structure');
       }
+      debugLog('Session token found and validated');
     } catch (error) {
-      console.error('Invalid session data format:', error);
+      errorLog('Invalid session data format', error);
       return { error: 'Invalid session data' };
     }
     
-    console.log('Requesting user role from API...');
+    // Make API request according to documentation
+    debugLog('Requesting user role from API');
     const response = await api.get('/api/user-role');
     
     if (response.data && response.data.role) {
       const userRole = response.data.role.toLowerCase();
-      console.log(`User role retrieved successfully: ${userRole}`);
+      infoLog(`User role retrieved successfully: ${userRole}`);
       
       // Validate returned role
       if (!['patient', 'doctor', 'admin'].includes(userRole)) {
-        console.warn(`Unexpected role value received: ${userRole}`);
+        warnLog(`Unexpected role value received: ${userRole}`);
       }
       
       return { role: userRole };
     } else {
-      console.error('User role not found in API response');
+      errorLog('User role not found in API response', response.data);
       return { error: 'User role not found' };
     }
   } catch (error) {
     const errorMessage = error.response?.data?.message || error.message;
     const statusCode = error.response?.status;
     
-    console.error(`Get User Role Error (${statusCode}):`, errorMessage);
+    errorLog(`Get user role error (${statusCode})`, errorMessage);
     
     if (statusCode === 401) {
       return { error: 'Authentication expired. Please login again.' };
-  }
+    }
     
     return { error: errorMessage || 'Failed to retrieve user role' };
   }
 }
 
-export{ getUserRole };
+export { getUserRole }; 
